@@ -13,103 +13,158 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 public class Ventana extends JFrame {
+	JPanel panel_Contenido = new JPanel();
+	JPanel panel_Opciones = new JPanel();
 	
 	public Ventana() {
-	
 		this.setVisible(true);
 		this.setSize(900, 550);
 		this.setLocationRelativeTo(null);
-		getContentPane().setLayout(null);
+		this.setLayout(null);
+		this.setTitle("Renta de carros");
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		JPanel panel = new JPanel();
-		panel.setBackground(new Color(81, 0, 2));
-		panel.setBounds(0, 0, 225, 511);
-		getContentPane().add(panel);
+		panel_Opciones.setBackground(Color.decode("#2F0909"));
+		panel_Opciones.setBounds(0, 0, 225, 550);
+		this.add(panel_Opciones);
 		
 		ImageIcon foto = new ImageIcon("carro.png");
 		JLabel icono = new JLabel();
-		icono.setSize(100, 100);
+		icono.setSize(85, 85);
 		icono.setLocation(75, 60);
 		icono.setIcon(new ImageIcon(
 				foto.getImage().getScaledInstance(icono.getWidth(), icono.getHeight(), Image.SCALE_SMOOTH)));
-		panel.add(icono);
+		panel_Opciones.add(icono);
 		
 		this.revalidate();
 		this.repaint();
 		
 		JButton btn_vehiculos = new JButton("Vehiculos");
-		btn_vehiculos.setSize(150, 40);
+		btn_vehiculos.setSize(150, 30);
 		btn_vehiculos.setLocation(35, 125);
-		btn_vehiculos.setFont(new Font("Arial", Font.BOLD, 22));
-		panel.add(btn_vehiculos);
+		btn_vehiculos.setFont(new Font("Arial", Font.BOLD, 20));
+		panel_Opciones.add(btn_vehiculos);
 		btn_vehiculos.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+				panel_Contenido.removeAll();
 				panel_vehiculos();
-				panel.repaint();
+				panel_Contenido.repaint();
 			}
-			
 		});
 		
 		JButton btn_Clientes = new JButton("Clientes");
-		btn_Clientes.setSize(150, 40);
-		btn_Clientes.setLocation(35, 185);
-		btn_Clientes.setFont(new Font("Arial", Font.BOLD, 22));
-		panel.add(btn_Clientes);
+		btn_Clientes.setSize(150, 30);
+		btn_Clientes.setLocation(35, 188);
+		btn_Clientes.setFont(new Font("Arial", Font.BOLD, 20));
+		panel_Opciones.add(btn_Clientes);
+		btn_Clientes.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				panel_Contenido.removeAll();
+				panel_Clientes();
+				panel_Contenido.repaint();
+			}
+		});
 		
 		JButton btn_Rentas = new JButton("Rentas");
-		btn_Rentas.setSize(150, 40);
-		btn_Rentas.setLocation(35, 245);
-		btn_Rentas.setFont(new Font("Arial", Font.BOLD, 22));
-		panel.add(btn_Rentas);
+		btn_Rentas.setSize(150, 30);
+		btn_Rentas.setLocation(35, 250);
+		btn_Rentas.setFont(new Font("Arial", Font.BOLD, 20));
+		panel_Opciones.add(btn_Rentas);
+		btn_Rentas.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				panel_Contenido.removeAll();
+				panel_Rentas();
+				panel_Contenido.repaint();
+			}
+		});
 		
 		JButton btn_Categorias = new JButton("Categorias");
-		btn_Categorias.setSize(150, 40);
-		btn_Categorias.setLocation(35, 300);
-		btn_Categorias.setFont(new Font("Arial", Font.BOLD, 22));
-		panel.add(btn_Categorias);
+		btn_Categorias.setSize(150, 30);
+		btn_Categorias.setLocation(35, 315);
+		btn_Categorias.setFont(new Font("Arial", Font.BOLD, 20));
+		panel_Opciones.add(btn_Categorias);
+		btn_Categorias.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				panel_Contenido.removeAll();
+				panel_Categorias();
+				panel_Contenido.repaint();
+			}
+		});
 		
 		JButton btn_Marcas = new JButton("Marcas");
-		btn_Marcas.setSize(150, 40);
-		btn_Marcas.setLocation(35, 355);
-		btn_Marcas.setFont(new Font("Arial", Font.BOLD, 22));
-		panel.add(btn_Marcas);
+		btn_Marcas.setSize(150, 30);
+		btn_Marcas.setLocation(35, 380);
+		btn_Marcas.setFont(new Font("Arial", Font.BOLD, 20));
+		panel_Opciones.add(btn_Marcas);
+		btn_Marcas.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				panel_Contenido.removeAll();
+				panel_Marcas();
+				panel_Contenido.repaint();
+			}
+		});
 		
 		JButton btn_Cerrar_Ses = new JButton("Cerrar sesión");
-		btn_Cerrar_Ses.setSize(150, 40);
-		btn_Cerrar_Ses.setLocation(35, 410);
+		btn_Cerrar_Ses.setSize(150, 30);
+		btn_Cerrar_Ses.setLocation(35, 440);
 		btn_Cerrar_Ses.setFont(new Font("Arial", Font.BOLD, 17));
-		panel.add(btn_Cerrar_Ses);
+		panel_Opciones.add(btn_Cerrar_Ses);
 		
-		JPanel panel_1 = new JPanel();
-		panel_1.setBackground(new Color(164, 164, 164));
-		panel_1.setBounds(225, 0, 659, 511);
-		getContentPane().add(panel_1);
-		this.setTitle("Renta de carros");
-		this.setBackground(Color.BLUE);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		panel_Contenido.setBackground(Color.decode("#F2E8E8"));
+		panel_Contenido.setBounds(225, 0, 659, 511);
+		this.add(panel_Contenido);
 		
-
+		this.repaint();
 		
 	}
 	
 	public void panel_vehiculos() {
-		
-		JPanel vehiculos = new JPanel();
-		vehiculos.setVisible(true);
-		vehiculos.setSize(900, 550);
-		vehiculos.setLocation(0, 0);
-		vehiculos.setBackground(Color.decode("#EEE5DA"));
-		vehiculos.setLayout(null);
-		
-		JLabel titulo2 = new JLabel("Panel de clientes", JLabel.CENTER);
-		titulo2.setSize(650, 30);
-		titulo2.setLocation(0, 20);
-		titulo2.setFont(new Font("Arial", Font.BOLD, 23));
-		vehiculos.add(titulo2);
-		
-
+		JLabel titulo_Panel_Vehiculos = new JLabel("Vehículos", JLabel.CENTER);
+		titulo_Panel_Vehiculos.setSize(650, 30);
+		titulo_Panel_Vehiculos.setLocation(0, 30);
+		titulo_Panel_Vehiculos.setFont(new Font("Arial", Font.ITALIC, 23));
+		panel_Contenido.add(titulo_Panel_Vehiculos);
+	}
+	
+	public void panel_Clientes() {
+		JLabel titulo_Panel_Clientes = new JLabel("Clientes", JLabel.CENTER);
+		titulo_Panel_Clientes.setSize(650, 30);
+		titulo_Panel_Clientes.setLocation(0, 30);
+		titulo_Panel_Clientes.setFont(new Font("Arial", Font.ITALIC, 23));
+		panel_Contenido.add(titulo_Panel_Clientes);
+	}
+	
+	public void panel_Rentas() {
+		JLabel titulo_Panel_Rentas = new JLabel("Rentas", JLabel.CENTER);
+		titulo_Panel_Rentas.setSize(650, 30);
+		titulo_Panel_Rentas.setLocation(0, 30);
+		titulo_Panel_Rentas.setFont(new Font("Arial", Font.ITALIC, 23));
+		panel_Contenido.add(titulo_Panel_Rentas);
+	}
+	
+	public void panel_Categorias() {
+		JLabel titulo_Panel_Categorias = new JLabel("Categorias", JLabel.CENTER);
+		titulo_Panel_Categorias.setSize(650, 30);
+		titulo_Panel_Categorias.setLocation(0, 30);
+		titulo_Panel_Categorias.setFont(new Font("Arial", Font.ITALIC, 23));
+		panel_Contenido.add(titulo_Panel_Categorias);
+	}
+	
+	public void panel_Marcas() {
+		JLabel titulo_Panel_Marcas = new JLabel("Marcas", JLabel.CENTER);
+		titulo_Panel_Marcas.setSize(650, 30);
+		titulo_Panel_Marcas.setLocation(0, 30);
+		titulo_Panel_Marcas.setFont(new Font("Arial", Font.ITALIC, 23));
+		panel_Contenido.add(titulo_Panel_Marcas);
 	}
 }
