@@ -70,6 +70,21 @@ public class Ventana extends JFrame {
 		if (actual.equals("categorias_eliminar")) {
 			gran_panel = categorias_Eliminar();
 		}
+		if (actual.equals("vehiculos")) {
+			gran_panel = vehiculos();
+		}
+		if (actual.equals("vehiculos_consultar")) {
+			gran_panel = vehiculos_Consultar();
+		}
+		if (actual.equals("vehiculos_añadir")) {
+			gran_panel = vehiculos_añadir();
+		}
+		if (actual.equals("vehiculos_editar")) {
+			gran_panel = vehiculos_editar();
+		}
+		if (actual.equals("vehiculos_eliminar")) {
+			gran_panel = vehiculos_eliminar();
+		}
 		this.add(gran_panel);
 		this.revalidate();
 		this.repaint();
@@ -173,27 +188,727 @@ public class Ventana extends JFrame {
 
 		JLabel titulo_Panel_Vehiculos = new JLabel("Vehículos", JLabel.CENTER);
 		titulo_Panel_Vehiculos.setSize(150, 30);
-		titulo_Panel_Vehiculos.setLocation(305, 30);
-		titulo_Panel_Vehiculos.setFont(new Font("Arial", Font.ITALIC, 23));
+		titulo_Panel_Vehiculos.setLocation(475, 30);
+		titulo_Panel_Vehiculos.setFont(new Font("Arial", Font.BOLD, 23));
 		vehiculos.add(titulo_Panel_Vehiculos);
 
-		JButton btn_volver_vehicu = new JButton("Volver");
-		btn_volver_vehicu.setSize(150, 30);
-		btn_volver_vehicu.setLocation(295, 450);
-		btn_volver_vehicu.setFont(new Font("Arial", Font.BOLD, 20));
-		vehiculos.add(btn_volver_vehicu);
-		btn_volver_vehicu.addActionListener(new ActionListener() {
+		ImageIcon foto = new ImageIcon("vehiculo_icono.png");
+		JLabel icono = new JLabel();
+		icono.setSize(85, 85);
+		icono.setLocation(510, 60);
+		icono.setIcon(new ImageIcon(
+				foto.getImage().getScaledInstance(icono.getWidth(), icono.getHeight(), Image.SCALE_SMOOTH)));
+		vehiculos.add(icono);
 
+		JButton btn_consultar = new JButton("Consultar");
+		btn_consultar.setSize(250, 30);
+		btn_consultar.setLocation(295, 260);
+		btn_consultar.setBackground(Color.decode("#2F0909"));
+		btn_consultar.setFont(new Font("Arial", Font.BOLD, 20));
+		btn_consultar.setForeground(Color.white);
+		vehiculos.add(btn_consultar);
+
+		ImageIcon foto_consultar = new ImageIcon("consultar_icono.png");
+		JLabel icono_consultar = new JLabel();
+		icono_consultar.setSize(85, 85);
+		icono_consultar.setLocation(375, 170);
+		icono_consultar.setIcon(new ImageIcon(foto_consultar.getImage().getScaledInstance(icono_consultar.getWidth(),
+				icono_consultar.getHeight(), Image.SCALE_SMOOTH)));
+		vehiculos.add(icono_consultar);
+
+		JButton btn_añadir = new JButton("Añadir");
+		btn_añadir.setSize(250, 30);
+		btn_añadir.setLocation(575, 260);
+		btn_añadir.setBackground(Color.decode("#2F0909"));
+		btn_añadir.setFont(new Font("Arial", Font.BOLD, 20));
+		btn_añadir.setForeground(Color.white);
+		vehiculos.add(btn_añadir);
+
+		ImageIcon foto_añadir = new ImageIcon("añadir_icono.png");
+		JLabel icono_añadir = new JLabel();
+		icono_añadir.setSize(85, 85);
+		icono_añadir.setLocation(655, 170);
+		icono_añadir.setIcon(new ImageIcon(foto_añadir.getImage().getScaledInstance(icono_añadir.getWidth(),
+				icono_añadir.getHeight(), Image.SCALE_SMOOTH)));
+		vehiculos.add(icono_añadir);
+
+		JButton btn_editar = new JButton("Editar");
+		btn_editar.setSize(250, 30);
+		btn_editar.setLocation(295, 440);
+		btn_editar.setBackground(Color.decode("#2F0909"));
+		btn_editar.setFont(new Font("Arial", Font.BOLD, 20));
+		btn_editar.setForeground(Color.white);
+		vehiculos.add(btn_editar);
+
+		ImageIcon foto_editar = new ImageIcon("editar_icono.png");
+		JLabel icono_editar = new JLabel();
+		icono_editar.setSize(85, 85);
+		icono_editar.setLocation(385, 340);
+		icono_editar.setIcon(new ImageIcon(foto_editar.getImage().getScaledInstance(icono_editar.getWidth(),
+				icono_editar.getHeight(), Image.SCALE_SMOOTH)));
+		vehiculos.add(icono_editar);
+
+		JButton btn_Eliminar = new JButton("Eliminar");
+		btn_Eliminar.setSize(250, 30);
+		btn_Eliminar.setLocation(575, 440);
+		btn_Eliminar.setBackground(Color.decode("#2F0909"));
+		btn_Eliminar.setFont(new Font("Arial", Font.BOLD, 20));
+		btn_Eliminar.setForeground(Color.white);
+		vehiculos.add(btn_Eliminar);
+
+		ImageIcon foto_eliminar = new ImageIcon("eliminar_icono.png");
+		JLabel icono_eliminar = new JLabel();
+		icono_eliminar.setSize(85, 85);
+		icono_eliminar.setLocation(655, 340);
+		icono_eliminar.setIcon(new ImageIcon(foto_eliminar.getImage().getScaledInstance(icono_eliminar.getWidth(),
+				icono_eliminar.getHeight(), Image.SCALE_SMOOTH)));
+		vehiculos.add(icono_eliminar);
+
+		btn_consultar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				actual = "dash";
+				actual = "vehiculos_consultar";
 				route();
 			}
+		});
 
+		btn_añadir.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				cmb.removeAllItems();
+				conexion.llenar_CMB_Marcas(cmb);
+				actual = "vehiculos_añadir";
+				route();
+			}
+		});
+
+		btn_editar.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				cmb.removeAllItems();
+				conexion.llenar_CMB_Vehiculos(cmb);
+				actual = "vehiculos_editar";
+				route();
+			}
+		});
+
+		btn_Eliminar.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				cmb.removeAllItems();
+				conexion.llenar_CMB_Vehiculos(cmb);
+				actual = "vehiculos_eliminar";
+				route();
+			}
 		});
 
 		return vehiculos;
+	}
+
+	public JPanel vehiculos_Consultar() {
+		JPanel vehiculos_Consultar = new JPanel();
+		vehiculos_Consultar.setVisible(true);
+		vehiculos_Consultar.setSize(900, 550);
+		vehiculos_Consultar.setLocation(0, 0);
+		vehiculos_Consultar.setBackground(Color.decode("#D9D9D9"));
+		vehiculos_Consultar.setLayout(null);
+
+		JPanel panel_opciones = panel_Opciones();
+		vehiculos_Consultar.add(panel_opciones);
+
+		JLabel titulo_Panel_Vehiculos = new JLabel("Vehículos", JLabel.CENTER);
+		titulo_Panel_Vehiculos.setSize(150, 30);
+		titulo_Panel_Vehiculos.setLocation(325, 30);
+		titulo_Panel_Vehiculos.setFont(new Font("Arial", Font.BOLD, 23));
+		vehiculos_Consultar.add(titulo_Panel_Vehiculos);
+
+		JLabel titulo_Panel_Vehiculos_Consultar = new JLabel("Consultar");
+		titulo_Panel_Vehiculos_Consultar.setSize(180, 30);
+		titulo_Panel_Vehiculos_Consultar.setLocation(655, 30);
+		titulo_Panel_Vehiculos_Consultar.setFont(new Font("Arial", Font.BOLD, 23));
+		vehiculos_Consultar.add(titulo_Panel_Vehiculos_Consultar);
+
+		ImageIcon foto_consultar = new ImageIcon("consultar_icono.png");
+		JLabel icono_consultar = new JLabel();
+		icono_consultar.setSize(85, 85);
+		icono_consultar.setLocation(520, 10);
+		icono_consultar.setIcon(new ImageIcon(foto_consultar.getImage().getScaledInstance(icono_consultar.getWidth(),
+				icono_consultar.getHeight(), Image.SCALE_SMOOTH)));
+		vehiculos_Consultar.add(icono_consultar);
+
+		JLabel titulo_tabla_rentas = new JLabel("Historial de rentas");
+		titulo_tabla_rentas.setSize(130, 30);
+		titulo_tabla_rentas.setLocation(495, 100);
+		titulo_tabla_rentas.setFont(new Font("Arial", Font.BOLD, 12));
+		vehiculos_Consultar.add(titulo_tabla_rentas);
+
+		String nombresColumna[] = { "Modelo", "Cliente", "F. Inicial", "F.Final", "Costo total" };
+		JTable tabla = new JTable();
+		DefaultTableModel tablaModel = new DefaultTableModel();
+		tablaModel.setColumnIdentifiers(nombresColumna);
+		tabla.setModel(tablaModel);
+		conexion.consultar_Rentas(tablaModel);
+		JScrollPane sp = new JScrollPane(tabla);
+		sp.setSize(530, 100);
+		sp.setLocation(285, 140);
+		vehiculos_Consultar.add(sp);
+
+		JLabel titulo_tabla_tarifas = new JLabel("Tarifas");
+		titulo_tabla_tarifas.setSize(130, 30);
+		titulo_tabla_tarifas.setLocation(530, 260);
+		titulo_tabla_tarifas.setFont(new Font("Arial", Font.BOLD, 12));
+		vehiculos_Consultar.add(titulo_tabla_tarifas);
+
+		String nombresColumna2[] = { "Marca", "Modelo", "Tarifa" };
+		JTable tabla2 = new JTable();
+		DefaultTableModel tablaModel2 = new DefaultTableModel();
+		tablaModel2.setColumnIdentifiers(nombresColumna2);
+		tabla2.setModel(tablaModel2);
+		conexion.consultar_Vehiculos(tablaModel2);
+		JScrollPane sp2 = new JScrollPane(tabla2);
+		sp2.setSize(530, 100);
+		sp2.setLocation(285, 290);
+		vehiculos_Consultar.add(sp2);
+
+		JButton btn_Volver = new JButton("Volver");
+		btn_Volver.setSize(250, 30);
+		btn_Volver.setLocation(425, 455);
+		btn_Volver.setBackground(Color.decode("#2F0909"));
+		btn_Volver.setFont(new Font("Arial", Font.BOLD, 20));
+		btn_Volver.setForeground(Color.white);
+		vehiculos_Consultar.add(btn_Volver);
+
+		btn_Volver.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				actual = "vehiculos";
+				route();
+			}
+		});
+
+		return vehiculos_Consultar;
+	}
+
+	public JPanel vehiculos_añadir() {
+		JPanel vehiculos_añadir = new JPanel();
+		vehiculos_añadir.setVisible(true);
+		vehiculos_añadir.setSize(900, 550);
+		vehiculos_añadir.setLocation(0, 0);
+		vehiculos_añadir.setBackground(Color.decode("#D9D9D9"));
+		vehiculos_añadir.setLayout(null);
+
+		JPanel panel_opciones = panel_Opciones();
+		vehiculos_añadir.add(panel_opciones);
+
+		JLabel titulo_Panel_Vehiculos = new JLabel("Vehiculos", JLabel.CENTER);
+		titulo_Panel_Vehiculos.setSize(150, 30);
+		titulo_Panel_Vehiculos.setLocation(325, 30);
+		titulo_Panel_Vehiculos.setFont(new Font("Arial", Font.BOLD, 23));
+		vehiculos_añadir.add(titulo_Panel_Vehiculos);
+
+		JLabel titulo_Panel_Vehiculos_Añadir = new JLabel("Añadir");
+		titulo_Panel_Vehiculos_Añadir.setSize(180, 30);
+		titulo_Panel_Vehiculos_Añadir.setLocation(655, 30);
+		titulo_Panel_Vehiculos_Añadir.setFont(new Font("Arial", Font.BOLD, 23));
+		vehiculos_añadir.add(titulo_Panel_Vehiculos_Añadir);
+
+		ImageIcon foto_añadir = new ImageIcon("añadir_icono.png");
+		JLabel icono_añadir = new JLabel();
+		icono_añadir.setSize(85, 85);
+		icono_añadir.setLocation(520, 10);
+		icono_añadir.setIcon(new ImageIcon(foto_añadir.getImage().getScaledInstance(icono_añadir.getWidth(),
+				icono_añadir.getHeight(), Image.SCALE_SMOOTH)));
+		vehiculos_añadir.add(icono_añadir);
+
+		cmb.setSize(440, 30);
+		cmb.setLocation(325, 110);
+		vehiculos_añadir.add(cmb);
+
+		JLabel marca_vehículo = new JLabel("Selecciona la marca de el vehículo");
+		marca_vehículo.setSize(300, 30);
+		marca_vehículo.setLocation(425, 140);
+		marca_vehículo.setFont(new Font("Arial", Font.BOLD, 14));
+		vehiculos_añadir.add(marca_vehículo);
+
+		JLabel nombre_vehículo = new JLabel("Ingresa el nombre de el vehículo");
+		nombre_vehículo.setSize(300, 30);
+		nombre_vehículo.setLocation(265, 180);
+		nombre_vehículo.setFont(new Font("Arial", Font.BOLD, 16));
+		vehiculos_añadir.add(nombre_vehículo);
+
+		JTextField in_nombre_vehiculo = new JTextField();
+		in_nombre_vehiculo.setSize(280, 30);
+		in_nombre_vehiculo.setLocation(250, 210);
+		in_nombre_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		vehiculos_añadir.add(in_nombre_vehiculo);
+
+		/*
+		 * JLabel marca_vehiculo = new JLabel("Ingresa la marca de el vehículo");
+		 * marca_vehiculo.setSize(300, 30); marca_vehiculo.setLocation(605, 150);
+		 * marca_vehiculo.setFont(new Font("Arial", Font.BOLD, 16));
+		 * vehiculos_añadir.add(marca_vehiculo);
+		 * 
+		 * JTextField in_marca_vehiculo = new JTextField();
+		 * in_marca_vehiculo.setSize(280, 30); in_marca_vehiculo.setLocation(585, 180);
+		 * in_marca_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		 * vehiculos_añadir.add(in_marca_vehiculo);
+		 */
+
+		JLabel modelo_vehiculo = new JLabel("Ingresa el modelo de el vehículo");
+		modelo_vehiculo.setSize(300, 30);
+		modelo_vehiculo.setLocation(265, 270);
+		modelo_vehiculo.setFont(new Font("Arial", Font.BOLD, 16));
+		vehiculos_añadir.add(modelo_vehiculo);
+
+		JTextField in_modelo_vehiculo = new JTextField();
+		in_modelo_vehiculo.setSize(280, 30);
+		in_modelo_vehiculo.setLocation(250, 300);
+		in_modelo_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		vehiculos_añadir.add(in_modelo_vehiculo);
+
+		JLabel transmision_vehiculo = new JLabel("Ingresa la transmisión de el vehículo");
+		transmision_vehiculo.setSize(300, 30);
+		transmision_vehiculo.setLocation(590, 180);
+		transmision_vehiculo.setFont(new Font("Arial", Font.BOLD, 16));
+		vehiculos_añadir.add(transmision_vehiculo);
+
+		JTextField in_transmision_vehiculo = new JTextField();
+		in_transmision_vehiculo.setSize(280, 30);
+		in_transmision_vehiculo.setLocation(585, 210);
+		in_transmision_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		vehiculos_añadir.add(in_transmision_vehiculo);
+
+		JLabel tarifa_vehiculo = new JLabel("Ingresa la tarifa de el vehículo");
+		tarifa_vehiculo.setSize(300, 30);
+		tarifa_vehiculo.setLocation(275, 360);
+		tarifa_vehiculo.setFont(new Font("Arial", Font.BOLD, 16));
+		vehiculos_añadir.add(tarifa_vehiculo);
+
+		JTextField in_tarifa_vehiculo = new JTextField();
+		in_tarifa_vehiculo.setSize(280, 30);
+		in_tarifa_vehiculo.setLocation(250, 390);
+		in_tarifa_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		vehiculos_añadir.add(in_tarifa_vehiculo);
+
+		JLabel año_vehiculo = new JLabel("Ingresa el año de el vehículo");
+		año_vehiculo.setSize(300, 30);
+		año_vehiculo.setLocation(615, 270);
+		año_vehiculo.setFont(new Font("Arial", Font.BOLD, 16));
+		vehiculos_añadir.add(año_vehiculo);
+
+		JTextField in_año_vehiculo = new JTextField();
+		in_año_vehiculo.setSize(280, 30);
+		in_año_vehiculo.setLocation(585, 300);
+		in_año_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		vehiculos_añadir.add(in_año_vehiculo);
+
+		JButton btn_Volver = new JButton("Volver");
+		btn_Volver.setSize(250, 30);
+		btn_Volver.setLocation(275, 455);
+		btn_Volver.setBackground(Color.decode("#2F0909"));
+		btn_Volver.setFont(new Font("Arial", Font.BOLD, 20));
+		btn_Volver.setForeground(Color.white);
+		vehiculos_añadir.add(btn_Volver);
+
+		JButton btn_Crear = new JButton("Añadir");
+		btn_Crear.setSize(250, 30);
+		btn_Crear.setLocation(575, 455);
+		btn_Crear.setBackground(Color.decode("#2A5729"));
+		btn_Crear.setFont(new Font("Arial", Font.BOLD, 20));
+		btn_Crear.setForeground(Color.white);
+		vehiculos_añadir.add(btn_Crear);
+
+		btn_Volver.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				actual = "vehiculos";
+				route();
+			}
+		});
+
+		btn_Crear.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if (!in_nombre_vehiculo.getText().isEmpty() && !in_modelo_vehiculo.getText().isEmpty()
+						&& !in_transmision_vehiculo.getText().isEmpty() && !in_año_vehiculo.getText().isEmpty()
+						&& !in_tarifa_vehiculo.getText().isEmpty()) {
+					if (validarDigitos(in_nombre_vehiculo) && validarDigitos(in_transmision_vehiculo)) {
+						if (validarNumeros(in_año_vehiculo) && validarNumeros(in_tarifa_vehiculo)) {
+							if (!conexion.añadir_Vehiculo(in_nombre_vehiculo, in_modelo_vehiculo,
+									in_transmision_vehiculo, in_tarifa_vehiculo, in_año_vehiculo, cmb)) {
+								JOptionPane.showMessageDialog(null, "Vehiculo añadido correctamente");
+								in_año_vehiculo.setText("");
+								in_modelo_vehiculo.setText("");
+								in_nombre_vehiculo.setText("");
+								in_tarifa_vehiculo.setText("");
+								in_transmision_vehiculo.setText("");
+							} else {
+								JOptionPane.showMessageDialog(null, "Error. Este vehículo ya se encuentra añadido");
+							}
+						} else {
+							JOptionPane.showMessageDialog(null,
+									"Error. Solo se permiten valores numericos para el año y tarifa de el vehículo");
+						}
+					} else {
+						JOptionPane.showMessageDialog(null,
+								"Error. No se permiten valores numericos para el nombre o transmisión de el vehículo");
+					}
+
+				} else {
+					JOptionPane.showMessageDialog(null, "Error. Todos los campos deben estar llenados");
+				}
+			}
+		});
+
+		return vehiculos_añadir;
+	}
+
+	public JPanel vehiculos_editar() {
+		JPanel vehiculos_editar = new JPanel();
+		vehiculos_editar.setVisible(true);
+		vehiculos_editar.setSize(900, 550);
+		vehiculos_editar.setLocation(0, 0);
+		vehiculos_editar.setBackground(Color.decode("#D9D9D9"));
+		vehiculos_editar.setLayout(null);
+
+		JPanel panel_opciones = panel_Opciones();
+		vehiculos_editar.add(panel_opciones);
+
+		JLabel titulo_Panel_Vehiculos = new JLabel("Vehículos", JLabel.CENTER);
+		titulo_Panel_Vehiculos.setSize(150, 30);
+		titulo_Panel_Vehiculos.setLocation(325, 30);
+		titulo_Panel_Vehiculos.setFont(new Font("Arial", Font.BOLD, 23));
+		vehiculos_editar.add(titulo_Panel_Vehiculos);
+
+		JLabel titulo_Panel_Vehiculos_Editar = new JLabel("Editar");
+		titulo_Panel_Vehiculos_Editar.setSize(180, 30);
+		titulo_Panel_Vehiculos_Editar.setLocation(655, 30);
+		titulo_Panel_Vehiculos_Editar.setFont(new Font("Arial", Font.BOLD, 23));
+		vehiculos_editar.add(titulo_Panel_Vehiculos_Editar);
+
+		ImageIcon foto_editar = new ImageIcon("editar_icono.png");
+		JLabel icono_editar = new JLabel();
+		icono_editar.setSize(85, 85);
+		icono_editar.setLocation(520, 10);
+		icono_editar.setIcon(new ImageIcon(foto_editar.getImage().getScaledInstance(icono_editar.getWidth(),
+				icono_editar.getHeight(), Image.SCALE_SMOOTH)));
+		vehiculos_editar.add(icono_editar);
+
+		cmb.setSize(440, 30);
+		cmb.setLocation(325, 120);
+		vehiculos_editar.add(cmb);
+
+		JLabel instruccion = new JLabel("Selecciona el vehículo que deseas editar");
+		instruccion.setSize(300, 30);
+		instruccion.setLocation(425, 150);
+		instruccion.setFont(new Font("Arial", Font.PLAIN, 12));
+		vehiculos_editar.add(instruccion);
+
+		JLabel nombre_vehículo = new JLabel("Ingresa el nombre de el vehículo");
+		nombre_vehículo.setSize(300, 30);
+		nombre_vehículo.setLocation(265, 180);
+		nombre_vehículo.setFont(new Font("Arial", Font.BOLD, 16));
+		vehiculos_editar.add(nombre_vehículo);
+
+		JTextField in_nombre_vehiculo = new JTextField();
+		in_nombre_vehiculo.setSize(280, 30);
+		in_nombre_vehiculo.setLocation(250, 210);
+		in_nombre_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		vehiculos_editar.add(in_nombre_vehiculo);
+
+		JLabel marca_vehiculo = new JLabel("Ingresa la marca de el vehículo");
+		marca_vehiculo.setSize(300, 30);
+		marca_vehiculo.setLocation(605, 180);
+		marca_vehiculo.setFont(new Font("Arial", Font.BOLD, 16));
+		vehiculos_editar.add(marca_vehiculo);
+
+		JTextField in_marca_vehiculo = new JTextField();
+		in_marca_vehiculo.setSize(280, 30);
+		in_marca_vehiculo.setLocation(585, 210);
+		in_marca_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		vehiculos_editar.add(in_marca_vehiculo);
+
+		JLabel modelo_vehiculo = new JLabel("Ingresa el modelo de el vehículo");
+		modelo_vehiculo.setSize(300, 30);
+		modelo_vehiculo.setLocation(265, 270);
+		modelo_vehiculo.setFont(new Font("Arial", Font.BOLD, 16));
+		vehiculos_editar.add(modelo_vehiculo);
+
+		JTextField in_modelo_vehiculo = new JTextField();
+		in_modelo_vehiculo.setSize(280, 30);
+		in_modelo_vehiculo.setLocation(250, 300);
+		in_modelo_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_modelo_vehiculo.setEditable(false);
+		vehiculos_editar.add(in_modelo_vehiculo);
+
+		JLabel transmision_vehiculo = new JLabel("Ingresa la transmisión de el vehículo");
+		transmision_vehiculo.setSize(300, 30);
+		transmision_vehiculo.setLocation(590, 270);
+		transmision_vehiculo.setFont(new Font("Arial", Font.BOLD, 16));
+		vehiculos_editar.add(transmision_vehiculo);
+
+		JTextField in_transmision_vehiculo = new JTextField();
+		in_transmision_vehiculo.setSize(280, 30);
+		in_transmision_vehiculo.setLocation(585, 300);
+		in_transmision_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		vehiculos_editar.add(in_transmision_vehiculo);
+
+		JLabel tarifa_vehiculo = new JLabel("Ingresa la tarifa de el vehículo");
+		tarifa_vehiculo.setSize(300, 30);
+		tarifa_vehiculo.setLocation(275, 360);
+		tarifa_vehiculo.setFont(new Font("Arial", Font.BOLD, 16));
+		vehiculos_editar.add(tarifa_vehiculo);
+
+		JTextField in_tarifa_vehiculo = new JTextField();
+		in_tarifa_vehiculo.setSize(280, 30);
+		in_tarifa_vehiculo.setLocation(250, 390);
+		in_tarifa_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		vehiculos_editar.add(in_tarifa_vehiculo);
+
+		JLabel año_vehiculo = new JLabel("Ingresa el año de el vehículo");
+		año_vehiculo.setSize(300, 30);
+		año_vehiculo.setLocation(615, 360);
+		año_vehiculo.setFont(new Font("Arial", Font.BOLD, 16));
+		vehiculos_editar.add(año_vehiculo);
+
+		JTextField in_año_vehiculo = new JTextField();
+		in_año_vehiculo.setSize(280, 30);
+		in_año_vehiculo.setLocation(585, 390);
+		in_año_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		vehiculos_editar.add(in_año_vehiculo);
+
+		JButton btn_Volver = new JButton("Volver");
+		btn_Volver.setSize(250, 30);
+		btn_Volver.setLocation(275, 455);
+		btn_Volver.setBackground(Color.decode("#2F0909"));
+		btn_Volver.setFont(new Font("Arial", Font.BOLD, 20));
+		btn_Volver.setForeground(Color.white);
+		vehiculos_editar.add(btn_Volver);
+
+		JButton btn_Editar = new JButton("Editar");
+		btn_Editar.setSize(250, 30);
+		btn_Editar.setLocation(575, 455);
+		btn_Editar.setBackground(Color.decode("#2A5729"));
+		btn_Editar.setFont(new Font("Arial", Font.BOLD, 20));
+		btn_Editar.setForeground(Color.white);
+		vehiculos_editar.add(btn_Editar);
+
+		btn_Volver.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				actual = "vehiculos";
+				route();
+			}
+		});
+
+		btn_Editar.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if (!in_nombre_vehiculo.getText().isEmpty() && !in_marca_vehiculo.getText().isEmpty()
+						&& !in_transmision_vehiculo.getText().isEmpty() && !in_tarifa_vehiculo.getText().isEmpty()
+						&& !in_año_vehiculo.getText().isEmpty()) {
+					if (validarDigitos(in_nombre_vehiculo) && validarDigitos(in_marca_vehiculo)
+							&& validarDigitos(in_transmision_vehiculo)) {
+						if (validarNumeros(in_año_vehiculo) && validarNumeros(in_tarifa_vehiculo)) {
+							int confirmacion = JOptionPane.showConfirmDialog(null,
+									"¿Está seguro de editar este vehículo?");
+							if (confirmacion == 0) {
+								if (conexion.editar_Vehiculo(in_modelo_vehiculo, in_nombre_vehiculo, in_marca_vehiculo,
+										in_transmision_vehiculo, in_tarifa_vehiculo, in_año_vehiculo, cmb)) {
+									JOptionPane.showMessageDialog(null, "Vehiculo editado correctamente");
+									in_año_vehiculo.setText("");
+									in_marca_vehiculo.setText("");
+									in_modelo_vehiculo.setText("");
+									in_nombre_vehiculo.setText("");
+									in_tarifa_vehiculo.setText("");
+									in_transmision_vehiculo.setText("");
+								} else {
+									JOptionPane.showMessageDialog(null, "Error. Esta marca no se encuentra registrada");
+								}
+							}
+						} else {
+							JOptionPane.showMessageDialog(null,
+									"Error. Solo se permiten valores numericos para el año y tarifa de el vehículo");
+						}
+					} else {
+						JOptionPane.showMessageDialog(null,
+								"Error. No se permiten valores numericos para el nombre, marca y transmision de el vehículo");
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "Error. Todos los campos deben estar llenados");
+				}
+			}
+		});
+		return vehiculos_editar;
+
+	}
+
+	public JPanel vehiculos_eliminar() {
+		JPanel vehiculos_eliminar = new JPanel();
+		vehiculos_eliminar.setVisible(true);
+		vehiculos_eliminar.setSize(900, 550);
+		vehiculos_eliminar.setLocation(0, 0);
+		vehiculos_eliminar.setBackground(Color.decode("#D9D9D9"));
+		vehiculos_eliminar.setLayout(null);
+
+		JPanel panel_opciones = panel_Opciones();
+		vehiculos_eliminar.add(panel_opciones);
+
+		JLabel titulo_Panel_Vehiculos = new JLabel("Vehículos", JLabel.CENTER);
+		titulo_Panel_Vehiculos.setSize(150, 30);
+		titulo_Panel_Vehiculos.setLocation(325, 30);
+		titulo_Panel_Vehiculos.setFont(new Font("Arial", Font.BOLD, 23));
+		vehiculos_eliminar.add(titulo_Panel_Vehiculos);
+
+		JLabel titulo_Panel_Categorias_Eliminar = new JLabel("Elminar");
+		titulo_Panel_Categorias_Eliminar.setSize(180, 30);
+		titulo_Panel_Categorias_Eliminar.setLocation(655, 30);
+		titulo_Panel_Categorias_Eliminar.setFont(new Font("Arial", Font.BOLD, 23));
+		vehiculos_eliminar.add(titulo_Panel_Categorias_Eliminar);
+
+		ImageIcon foto_editar = new ImageIcon("eliminar_icono.png");
+		JLabel icono_editar = new JLabel();
+		icono_editar.setSize(85, 85);
+		icono_editar.setLocation(520, 10);
+		icono_editar.setIcon(new ImageIcon(foto_editar.getImage().getScaledInstance(icono_editar.getWidth(),
+				icono_editar.getHeight(), Image.SCALE_SMOOTH)));
+		vehiculos_eliminar.add(icono_editar);
+
+		cmb.setSize(440, 30);
+		cmb.setLocation(325, 120);
+		vehiculos_eliminar.add(cmb);
+
+		JLabel instruccion = new JLabel("Selecciona el vehículo que deseas eliminar");
+		instruccion.setSize(300, 30);
+		instruccion.setLocation(425, 150);
+		instruccion.setFont(new Font("Arial", Font.PLAIN, 12));
+		vehiculos_eliminar.add(instruccion);
+
+		JLabel nombre_vehículo = new JLabel("Ingresa el nombre de el vehículo");
+		nombre_vehículo.setSize(300, 30);
+		nombre_vehículo.setLocation(265, 180);
+		nombre_vehículo.setFont(new Font("Arial", Font.BOLD, 16));
+		vehiculos_eliminar.add(nombre_vehículo);
+
+		JTextField in_nombre_vehiculo = new JTextField();
+		in_nombre_vehiculo.setSize(280, 30);
+		in_nombre_vehiculo.setLocation(250, 210);
+		in_nombre_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_nombre_vehiculo.setEditable(false);
+		vehiculos_eliminar.add(in_nombre_vehiculo);
+
+		JLabel marca_vehiculo = new JLabel("Ingresa la marca de el vehículo");
+		marca_vehiculo.setSize(300, 30);
+		marca_vehiculo.setLocation(605, 180);
+		marca_vehiculo.setFont(new Font("Arial", Font.BOLD, 16));
+		vehiculos_eliminar.add(marca_vehiculo);
+
+		JTextField in_marca_vehiculo = new JTextField();
+		in_marca_vehiculo.setSize(280, 30);
+		in_marca_vehiculo.setLocation(585, 210);
+		in_marca_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_marca_vehiculo.setEditable(false);
+		vehiculos_eliminar.add(in_marca_vehiculo);
+
+		JLabel modelo_vehiculo = new JLabel("Ingresa el modelo de el vehículo");
+		modelo_vehiculo.setSize(300, 30);
+		modelo_vehiculo.setLocation(265, 270);
+		modelo_vehiculo.setFont(new Font("Arial", Font.BOLD, 16));
+		vehiculos_eliminar.add(modelo_vehiculo);
+
+		JTextField in_modelo_vehiculo = new JTextField();
+		in_modelo_vehiculo.setSize(280, 30);
+		in_modelo_vehiculo.setLocation(250, 300);
+		in_modelo_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_modelo_vehiculo.setEditable(false);
+		vehiculos_eliminar.add(in_modelo_vehiculo);
+
+		JLabel transmision_vehiculo = new JLabel("Ingresa la transmisión de el vehículo");
+		transmision_vehiculo.setSize(300, 30);
+		transmision_vehiculo.setLocation(590, 270);
+		transmision_vehiculo.setFont(new Font("Arial", Font.BOLD, 16));
+		vehiculos_eliminar.add(transmision_vehiculo);
+
+		JTextField in_transmision_vehiculo = new JTextField();
+		in_transmision_vehiculo.setSize(280, 30);
+		in_transmision_vehiculo.setLocation(585, 300);
+		in_transmision_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_transmision_vehiculo.setEditable(false);
+		vehiculos_eliminar.add(in_transmision_vehiculo);
+
+		JLabel tarifa_vehiculo = new JLabel("Ingresa la tarifa de el vehículo");
+		tarifa_vehiculo.setSize(300, 30);
+		tarifa_vehiculo.setLocation(275, 360);
+		tarifa_vehiculo.setFont(new Font("Arial", Font.BOLD, 16));
+		vehiculos_eliminar.add(tarifa_vehiculo);
+
+		JTextField in_tarifa_vehiculo = new JTextField();
+		in_tarifa_vehiculo.setSize(280, 30);
+		in_tarifa_vehiculo.setLocation(250, 390);
+		in_tarifa_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_tarifa_vehiculo.setEditable(false);
+		vehiculos_eliminar.add(in_tarifa_vehiculo);
+
+		JLabel año_vehiculo = new JLabel("Ingresa el año de el vehículo");
+		año_vehiculo.setSize(300, 30);
+		año_vehiculo.setLocation(615, 360);
+		año_vehiculo.setFont(new Font("Arial", Font.BOLD, 16));
+		vehiculos_eliminar.add(año_vehiculo);
+
+		JTextField in_año_vehiculo = new JTextField();
+		in_año_vehiculo.setSize(280, 30);
+		in_año_vehiculo.setLocation(585, 390);
+		in_año_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_año_vehiculo.setEditable(false);
+		vehiculos_eliminar.add(in_año_vehiculo);
+
+		JButton btn_Volver = new JButton("Volver");
+		btn_Volver.setSize(250, 30);
+		btn_Volver.setLocation(275, 455);
+		btn_Volver.setBackground(Color.decode("#2A5729"));
+		btn_Volver.setFont(new Font("Arial", Font.BOLD, 20));
+		btn_Volver.setForeground(Color.white);
+		vehiculos_eliminar.add(btn_Volver);
+
+		JButton btn_Eliminar = new JButton("Eliminar");
+		btn_Eliminar.setSize(250, 30);
+		btn_Eliminar.setLocation(575, 455);
+		btn_Eliminar.setBackground(Color.decode("#2F0909"));
+		btn_Eliminar.setFont(new Font("Arial", Font.BOLD, 20));
+		btn_Eliminar.setForeground(Color.white);
+		vehiculos_eliminar.add(btn_Eliminar);
+
+		btn_Volver.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				actual = "vehiculos";
+				route();
+			}
+		});
+
+		btn_Eliminar.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				int confirmacion = JOptionPane.showConfirmDialog(null, "¿Está seguro de eliminar este vehículo?");
+				if (confirmacion == 0) {
+					conexion.eliminar_Vehiculo(cmb);
+					JOptionPane.showMessageDialog(null, "Vehículo eliminado correctamente");
+					cmb.setSelectedIndex(0);
+				}
+			}
+		});
+		return vehiculos_eliminar;
 	}
 
 	public JPanel clientes() {
@@ -732,14 +1447,14 @@ public class Ventana extends JFrame {
 		categorias_Editar.add(btn_Editar);
 
 		/*
-		cmb.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				conexion.llenar_Campos_Categoria_Segun_ComboBox(in_nombre_categoria, in_cantidad_llantas_categoria,
-						in_uso_categoria, in_peso_categoria, cmb);
-			}
-		});*/
+		 * cmb.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) { // TODO Auto-generated
+		 * method stub
+		 * conexion.llenar_Campos_Categoria_Segun_ComboBox(in_nombre_categoria,
+		 * in_cantidad_llantas_categoria, in_uso_categoria, in_peso_categoria, cmb); }
+		 * });
+		 */
 
 		btn_Volver.addActionListener(new ActionListener() {
 			@Override
@@ -1097,5 +1812,15 @@ public class Ventana extends JFrame {
 			}
 		}
 		return true;
+	}
+
+	public boolean validarFecha(JTextField campo) {
+		String line_fecha = campo.getText();
+		String[] fecha = line_fecha.split("-");
+		if (fecha[0].length() == 4 && fecha[1].length() == 2 && fecha[2].length() == 2) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

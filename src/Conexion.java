@@ -102,6 +102,92 @@ public class Conexion {
 		}
 	}
 
+	public void consultar_Vehiculos(DefaultTableModel tabla) {
+		conexion = null;
+		stm = null;
+		rs = null;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM vehiculo");
+
+			while (rs.next()) {
+				tabla.addRow(new Object[] { rs.getString(3), rs.getString(1), rs.getInt(5) });
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void consultar_Rentas(DefaultTableModel tabla) {
+		conexion = null;
+		stm = null;
+		rs = null;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM renta");
+
+			while (rs.next()) {
+				String nom_cliente = rs.getString(2) + " " + rs.getString(3);
+				tabla.addRow(
+						new Object[] { rs.getString(8), nom_cliente, rs.getDate(6), rs.getDate(7), rs.getDouble(9) });
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public boolean añadir_Vehiculo(JTextField nombre, JTextField modelo, JTextField transmision, JTextField tarifa,
+			JTextField año, JComboBox cmb) {
+		conexion = null;
+		stm = null;
+		rs = null;
+		Boolean existente = false;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM vehiculo");
+
+			while (rs.next()) {
+				if (rs.getString(1).equals(modelo.getText())) {
+					existente = true;
+				}
+			}
+
+			if (existente == false) {
+				PreparedStatement stm = (PreparedStatement) conexion
+						.prepareStatement("INSERT INTO vehiculo VALUE(?,?,?,?,?,?)");
+
+				stm.setString(1, modelo.getText().trim());
+				stm.setString(2, nombre.getText().trim());
+				stm.setString(3, cmb.getSelectedItem().toString());
+				stm.setString(4, transmision.getText().trim());
+				stm.setInt(5, Integer.valueOf(tarifa.getText()));
+				stm.setString(6, año.getText());
+				stm.executeUpdate();
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return existente;
+	}
+
 	public boolean añadir_Categorias(JTextField nombre, JTextField cant_llantas, JTextField uso, JTextField peso) {
 		conexion = null;
 		stm = null;
@@ -140,6 +226,28 @@ public class Conexion {
 		return existente;
 	}
 
+	public void llenar_CMB_Vehiculos(JComboBox cmb) {
+		conexion = null;
+		stm = null;
+		rs = null;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM vehiculo");
+
+			while (rs.next()) {
+				cmb.addItem(rs.getString(3) + " " + rs.getString(2) + " " + rs.getString(1));
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	public void llenar_CMB_Categorias(JComboBox cmb) {
 		conexion = null;
 		stm = null;
@@ -162,12 +270,54 @@ public class Conexion {
 		}
 	}
 
-	/*
-	public void llenar_Campos_Categoria_Segun_ComboBox(JTextField nombre, JTextField cant_llantas, JTextField uso,
-			JTextField peso, JComboBox cmb) {
+	public void llenar_CMB_Marcas(JComboBox cmb) {
 		conexion = null;
 		stm = null;
 		rs = null;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM marca");
+
+			while (rs.next()) {
+				cmb.addItem(rs.getString(1));
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/*
+	 * public void llenar_Campos_Categoria_Segun_ComboBox(JTextField nombre,
+	 * JTextField cant_llantas, JTextField uso, JTextField peso, JComboBox cmb) {
+	 * conexion = null; stm = null; rs = null; boolean existe = false;
+	 * 
+	 * try { Class.forName(CONTROLADOR); conexion = DriverManager.getConnection(URL,
+	 * USUARIO, CLAVE); System.out.println("Conexión OK");
+	 * 
+	 * stm = (Statement) conexion.createStatement(); rs =
+	 * stm.executeQuery("SELECT * FROM categoria");
+	 * 
+	 * while (rs.next()) { if
+	 * (rs.getString(2).equals(cmb.getSelectedItem().toString())) {
+	 * nombre.setText(rs.getString(2));
+	 * cant_llantas.setText(String.valueOf(rs.getInt(3)));
+	 * uso.setText(rs.getString(4)); peso.setText(String.valueOf(rs.getInt(5))); } }
+	 * } catch (SQLException | ClassNotFoundException e) { // TODO Auto-generated
+	 * catch block e.printStackTrace(); } }
+	 */
+
+	public boolean editar_Vehiculo(JTextField modelo, JTextField nombre, JTextField marca, JTextField transmision,
+			JTextField tarifa, JTextField año, JComboBox cmb) {
+		conexion = null;
+		stm = null;
+		rs = null;
+		String modelo_id = "";
 		boolean existe = false;
 
 		try {
@@ -176,21 +326,39 @@ public class Conexion {
 			System.out.println("Conexión OK");
 
 			stm = (Statement) conexion.createStatement();
-			rs = stm.executeQuery("SELECT * FROM categoria");
+			rs = stm.executeQuery("SELECT * FROM vehiculo");
 
 			while (rs.next()) {
-				if (rs.getString(2).equals(cmb.getSelectedItem().toString())) {
-					nombre.setText(rs.getString(2));
-					cant_llantas.setText(String.valueOf(rs.getInt(3)));
-					uso.setText(rs.getString(4));
-					peso.setText(String.valueOf(rs.getInt(5)));
+				if (cmb.getSelectedItem().toString().contains(rs.getString(1))) {
+					modelo_id = rs.getString(1);
 				}
+			}
+
+			rs = stm.executeQuery("SELECT * FROM marca");
+
+			while (rs.next()) {
+				if (marca.getText().equals(rs.getString(1))) {
+					existe = true;
+				}
+			}
+			if (existe) {
+				PreparedStatement stm = (PreparedStatement) conexion.prepareStatement(
+						"UPDATE vehiculo set nombre = ?, marca = ?, transmision = ?, tarifa = ?, año = ? where modelo = '"
+								+ modelo_id + "'");
+				stm.setString(1, nombre.getText().trim());
+				stm.setString(2, marca.getText().trim());
+				stm.setString(3, transmision.getText().trim());
+				stm.setInt(4, Integer.valueOf(tarifa.getText()));
+				stm.setInt(5, Integer.valueOf(año.getText()));
+				stm.executeUpdate();
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}*/
+		
+		return existe;
+	}
 
 	public boolean editar_Categoria(JTextField nombre, JTextField cant_llantas, JTextField uso, JTextField peso,
 			JComboBox cmb) {
@@ -247,6 +415,37 @@ public class Conexion {
 		return existe;
 	}
 
+	public void eliminar_Vehiculo(JComboBox cmb) {
+		conexion = null;
+		stm = null;
+		rs = null;
+		String modelo_id = "";
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM vehiculo");
+
+			while (rs.next()) {
+				if (cmb.getSelectedItem().toString().contains(rs.getString(1))) {
+					modelo_id = rs.getString(1);
+				}
+			}
+
+			PreparedStatement stm = (PreparedStatement) conexion
+					.prepareStatement("delete from vehiculo where modelo = '" + modelo_id + "'");
+
+			stm.executeUpdate();
+
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	public void eliminar_Categoria(JComboBox cmb) {
 		conexion = null;
 		stm = null;
@@ -256,7 +455,7 @@ public class Conexion {
 			Class.forName(CONTROLADOR);
 			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
 			System.out.println("Conexión OK");
-			
+
 			stm = (Statement) conexion.createStatement();
 			rs = stm.executeQuery("SELECT * FROM categoria");
 			int id = 0;

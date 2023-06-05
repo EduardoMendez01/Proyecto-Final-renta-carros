@@ -63,5 +63,18 @@ INSERT INTO cliente(nombre, apellidos, numero_telefono, contrasena, fecha_nacimi
 -- AGREGANDO CATEGORIA DE PRUEBA
 INSERT INTO categoria (nombre, cantidad_llantas, uso, peso_promedio) VALUE('Familiar', 4, 'Recreativo', 1500);
 
+-- AGREGANDO VEHICULO DE PRUEBA
+INSERT INTO vehiculo VALUE('Corvette', 'Aveo', 'Chevrolet', 'Estandar', 500, 2023);
+
+-- AGREGANDO RENTA DE PRUEBA
+INSERT INTO renta (nombre_cliente, apellidos_cliente, numero_telefono_cliente, tarifa_renta, fecha_inicial_renta, fecha_final_renta, modelo_vehiculo, costo_final) 
+VALUE('Luis', 'Parada', '6121677249', 500, '2023-06-05', '2023-06-25', 'Corvette', 10000);
+
+-- AGREGANDO MARCA DE PRUEBA
+INSERT INTO marca VALUE('Chevrolet', 'General Motors de México', 'Estados Unidos', '6127584488', 'ayuda@chevrolet.com');
+
 select * from cliente;
 select * from categoria;
+select * from vehiculo;
+select * from renta;
+select * from marca;
