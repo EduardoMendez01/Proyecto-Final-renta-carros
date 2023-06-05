@@ -93,7 +93,8 @@ public class Conexion {
 			rs = stm.executeQuery("SELECT * FROM categoria");
 
 			while (rs.next()) {
-				tabla.addRow(new Object[] { rs.getString(1), rs.getInt(2), rs.getString(3), rs.getInt(4) });
+				tabla.addRow(
+						new Object[] { rs.getInt(1), rs.getString(2), rs.getInt(3), rs.getString(4), rs.getInt(5), });
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -116,18 +117,20 @@ public class Conexion {
 			rs = stm.executeQuery("SELECT * FROM categoria");
 
 			while (rs.next()) {
-				if (rs.getString(1).equals(nombre.getText())) {
+				if (rs.getString(2).equals(nombre.getText())) {
 					existente = true;
 				}
 			}
 
 			if (existente == false) {
 				PreparedStatement stm = (PreparedStatement) conexion
-						.prepareStatement("INSERT INTO categoria VALUE(?,?,?,?)");
-				stm.setString(1, nombre.getText().trim());
-				stm.setInt(2, Integer.valueOf(cant_llantas.getText()));
-				stm.setString(3, uso.getText().trim());
-				stm.setInt(4, Integer.valueOf(peso.getText()));
+						.prepareStatement("INSERT INTO categoria VALUE(?,?,?,?,?)");
+
+				stm.setString(1, "0");
+				stm.setString(2, nombre.getText().trim());
+				stm.setInt(3, Integer.valueOf(cant_llantas.getText()));
+				stm.setString(4, uso.getText().trim());
+				stm.setInt(5, Integer.valueOf(peso.getText()));
 				stm.executeUpdate();
 			}
 		} catch (SQLException | ClassNotFoundException e) {
@@ -151,7 +154,7 @@ public class Conexion {
 			rs = stm.executeQuery("SELECT * FROM categoria");
 
 			while (rs.next()) {
-				cmb.addItem(rs.getString(1));
+				cmb.addItem(rs.getString(2));
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -159,12 +162,13 @@ public class Conexion {
 		}
 	}
 
-	public boolean editar_Categoria(JTextField nombre, JTextField cant_llantas, JTextField uso, JTextField peso,
-			JComboBox cmb) {
+	/*
+	public void llenar_Campos_Categoria_Segun_ComboBox(JTextField nombre, JTextField cant_llantas, JTextField uso,
+			JTextField peso, JComboBox cmb) {
 		conexion = null;
 		stm = null;
 		rs = null;
-		Boolean existente = false;
+		boolean existe = false;
 
 		try {
 			Class.forName(CONTROLADOR);
@@ -175,47 +179,103 @@ public class Conexion {
 			rs = stm.executeQuery("SELECT * FROM categoria");
 
 			while (rs.next()) {
-				if (rs.getString(1).equals(nombre.getText())) {
-					existente = true;
+				if (rs.getString(2).equals(cmb.getSelectedItem().toString())) {
+					nombre.setText(rs.getString(2));
+					cant_llantas.setText(String.valueOf(rs.getInt(3)));
+					uso.setText(rs.getString(4));
+					peso.setText(String.valueOf(rs.getInt(5)));
 				}
-			}
-
-			if (existente == false) {
-				PreparedStatement stm = (PreparedStatement) conexion.prepareStatement(
-						"UPDATE categoria set nombre = ?, cantidad_llantas = ?, uso = ?, peso_promedio = ? where nombre = Autobus");
-				stm.setString(1, nombre.getText().trim());
-				stm.setInt(2, Integer.valueOf(cant_llantas.getText()));
-				stm.setString(3, uso.getText().trim());
-				stm.setInt(4, Integer.valueOf(peso.getText()));
-				stm.executeUpdate();
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return existente;
-	}
+	}*/
 
-	public boolean eliminar_Categoria(JTextField nombre) {
+	public boolean editar_Categoria(JTextField nombre, JTextField cant_llantas, JTextField uso, JTextField peso,
+			JComboBox cmb) {
 		conexion = null;
 		stm = null;
 		rs = null;
-		Boolean existente = false;
+		boolean existe = false;
 
 		try {
 			Class.forName(CONTROLADOR);
 			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
 			System.out.println("Conexión OK");
 
-			PreparedStatement stm = (PreparedStatement) conexion
-					.prepareStatement("delete from categoria where nombre = " + nombre.getText());
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM categoria");
+			int id = 0;
+
+			// Ciclo para buscar y almacenar el ID de la categoria que se quiere modificar
+			while (rs.next()) {
+				if (rs.getString(2).equals(cmb.getSelectedItem().toString())) {
+					id = rs.getInt(1);
+				}
+			}
+
+			// Ciclo para verificar que si se quiere cambiar el nombre de la categoria este
+			// no exista ya
+			if (!nombre.getText().equals(cmb.getSelectedItem().toString())) {
+				rs = stm.executeQuery("SELECT * FROM categoria");
+				while (rs.next()) {
+					if (rs.getString(2).equals(nombre.getText())) {
+						existe = false;
+						id = 0;
+					}
+				}
+			}
+
+			if (id != 0) {
+				PreparedStatement stm = (PreparedStatement) conexion.prepareStatement(
+						"UPDATE categoria set nombre = ?, cantidad_llantas = ?, uso = ?, peso_promedio = ? where id = "
+								+ id);
+				stm.setString(1, nombre.getText().trim());
+				stm.setInt(2, Integer.valueOf(cant_llantas.getText()));
+				stm.setString(3, uso.getText().trim());
+				stm.setInt(4, Integer.valueOf(peso.getText()));
+				stm.executeUpdate();
+				existe = true;
+			} else {
+				existe = false;
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return existe;
+	}
+
+	public void eliminar_Categoria(JComboBox cmb) {
+		conexion = null;
+		stm = null;
+		rs = null;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
 			
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM categoria");
+			int id = 0;
+
+			// Ciclo para buscar y almacenar el ID de la categoria que se quiere eliminar
+			while (rs.next()) {
+				if (rs.getString(2).equals(cmb.getSelectedItem().toString())) {
+					id = rs.getInt(1);
+				}
+			}
+
+			PreparedStatement stm = (PreparedStatement) conexion
+					.prepareStatement("delete from categoria where id = " + id);
+
 			stm.executeUpdate();
 
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return existente;
 	}
 }

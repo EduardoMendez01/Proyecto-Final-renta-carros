@@ -1,3 +1,5 @@
+-- ELiminar base de datos
+DROP DATABASE IF EXISTS car_rental;
 -- Crea la base de datos
 CREATE DATABASE car_rental;
 -- Ingresar a la base de datos
@@ -38,7 +40,8 @@ CREATE TABLE renta(
 
 -- CREAR TABLA CATEGORIA
 CREATE TABLE categoria(
-	nombre VARCHAR(35) NOT NULL PRIMARY KEY,
+	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	nombre VARCHAR(35) NOT NULL,
     cantidad_llantas INT NOT NULL,
     uso VARCHAR(35) NOT NULL,
     peso_promedio INT NOT NULL
@@ -57,4 +60,8 @@ CREATE TABLE marca(
 INSERT INTO cliente(nombre, apellidos, numero_telefono, contrasena, fecha_nacimiento) VALUE('Luis', 'Parada', '6121677249', 'Prueba01', '2001-12-24');
 INSERT INTO cliente(nombre, apellidos, numero_telefono, contrasena, fecha_nacimiento) VALUE('Jose', 'Mendez', '6121231231', 'Fake01', '2003-11-24');
 
+-- AGREGANDO CATEGORIA DE PRUEBA
+INSERT INTO categoria (nombre, cantidad_llantas, uso, peso_promedio) VALUE('Familiar', 4, 'Recreativo', 1500);
+
 select * from cliente;
+select * from categoria;

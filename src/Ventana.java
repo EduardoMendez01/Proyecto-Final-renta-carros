@@ -378,16 +378,18 @@ public class Ventana extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+				cmb.removeAllItems();
 				conexion.llenar_CMB_Categorias(cmb);
 				actual = "categorias_editar";
 				route();
 			}
 		});
-		
+
 		btn_Eliminar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+				cmb.removeAllItems();
 				conexion.llenar_CMB_Categorias(cmb);
 				actual = "categorias_eliminar";
 				route();
@@ -428,7 +430,7 @@ public class Ventana extends JFrame {
 				icono_consultar.getHeight(), Image.SCALE_SMOOTH)));
 		categorias_consultar.add(icono_consultar);
 
-		String nombresColumna[] = { "Nombre", "Cantidad de llantas", "Uso", "Peso promedio (Kg)" };
+		String nombresColumna[] = { "ID", "Nombre", "Cantidad de llantas", "Uso", "Peso promedio (Kg)" };
 		JTable tabla = new JTable();
 		DefaultTableModel tablaModel = new DefaultTableModel();
 		tablaModel.setColumnIdentifiers(nombresColumna);
@@ -538,7 +540,7 @@ public class Ventana extends JFrame {
 		peso_categoria_1.setFont(new Font("Arial", Font.BOLD, 16));
 		categorias_Añadir.add(peso_categoria_1);
 
-		JLabel peso_categoria_2 = new JLabel("vehículos en esta categoria");
+		JLabel peso_categoria_2 = new JLabel("vehículos en esta categoria (Kg)");
 		peso_categoria_2.setSize(300, 30);
 		peso_categoria_2.setLocation(600, 290);
 		peso_categoria_2.setFont(new Font("Arial", Font.BOLD, 16));
@@ -622,7 +624,7 @@ public class Ventana extends JFrame {
 
 		JPanel panel_opciones = panel_Opciones();
 		categorias_Editar.add(panel_opciones);
-		
+
 		JLabel titulo_Panel_Categorias = new JLabel("Categorias", JLabel.CENTER);
 		titulo_Panel_Categorias.setSize(150, 30);
 		titulo_Panel_Categorias.setLocation(325, 30);
@@ -642,18 +644,17 @@ public class Ventana extends JFrame {
 		icono_editar.setIcon(new ImageIcon(foto_editar.getImage().getScaledInstance(icono_editar.getWidth(),
 				icono_editar.getHeight(), Image.SCALE_SMOOTH)));
 		categorias_Editar.add(icono_editar);
-		
-		
+
 		cmb.setSize(440, 30);
 		cmb.setLocation(325, 120);
 		categorias_Editar.add(cmb);
-		
+
 		JLabel instruccion = new JLabel("Selecciona la categoria que deseas editar");
 		instruccion.setSize(300, 30);
 		instruccion.setLocation(425, 150);
 		instruccion.setFont(new Font("Arial", Font.PLAIN, 12));
 		categorias_Editar.add(instruccion);
-		
+
 		JLabel nombre_categoria = new JLabel("Ingresa el nombre de la categoria");
 		nombre_categoria.setSize(300, 30);
 		nombre_categoria.setLocation(265, 210);
@@ -729,57 +730,64 @@ public class Ventana extends JFrame {
 		btn_Editar.setFont(new Font("Arial", Font.BOLD, 20));
 		btn_Editar.setForeground(Color.white);
 		categorias_Editar.add(btn_Editar);
-		
-		
+
+		/*
+		cmb.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				conexion.llenar_Campos_Categoria_Segun_ComboBox(in_nombre_categoria, in_cantidad_llantas_categoria,
+						in_uso_categoria, in_peso_categoria, cmb);
+			}
+		});*/
+
 		btn_Volver.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				cmb.removeAllItems();
 				actual = "categorias";
 				route();
 			}
 		});
-		
+
 		btn_Editar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				
-				int confirmacion = JOptionPane.showConfirmDialog(null, "¿Está seguro de editar esta categoria?");
-				if(confirmacion == 0) {
-					if (!in_nombre_categoria.getText().isEmpty() && !in_cantidad_llantas_categoria.getText().isEmpty()
-							&& !in_peso_categoria.getText().isEmpty() && !in_uso_categoria.getText().isEmpty()) {
-						if (validarDigitos(in_nombre_categoria) && validarDigitos(in_uso_categoria)) {
-							if (validarNumeros(in_peso_categoria) && validarNumeros(in_cantidad_llantas_categoria)) {
-								if (!conexion.editar_Categoria(in_nombre_categoria, in_cantidad_llantas_categoria, in_uso_categoria, in_peso_categoria, cmb)) {
+				if (!in_nombre_categoria.getText().isEmpty() && !in_cantidad_llantas_categoria.getText().isEmpty()
+						&& !in_peso_categoria.getText().isEmpty() && !in_uso_categoria.getText().isEmpty()) {
+					if (validarDigitos(in_nombre_categoria) && validarDigitos(in_uso_categoria)) {
+						if (validarNumeros(in_peso_categoria) && validarNumeros(in_cantidad_llantas_categoria)) {
+							int confirmacion = JOptionPane.showConfirmDialog(null,
+									"¿Está seguro de editar esta categoria?");
+							if (confirmacion == 0) {
+								if (conexion.editar_Categoria(in_nombre_categoria, in_cantidad_llantas_categoria,
+										in_uso_categoria, in_peso_categoria, cmb)) {
 									JOptionPane.showMessageDialog(null, "Categoria editada correctamente");
 									in_cantidad_llantas_categoria.setText("");
 									in_nombre_categoria.setText("");
 									in_peso_categoria.setText("");
 									in_uso_categoria.setText("");
 								} else {
-									JOptionPane.showMessageDialog(null, "Error. Esta categoria ya se encuentra añadida");
+									JOptionPane.showMessageDialog(null,
+											"Error. Esta categoria no existe o ya ha sido registrada con el mismo nombre");
 								}
-							} else {
-								JOptionPane.showMessageDialog(null,
-										"Error. Solo se permiten valores numericos para el peso y cantidad de llantas");
 							}
 						} else {
 							JOptionPane.showMessageDialog(null,
-									"Error. No se permiten valores numericos para el nombre y uso");
+									"Error. Solo se permiten valores numericos para el peso y cantidad de llantas");
 						}
-
 					} else {
-						JOptionPane.showMessageDialog(null, "Error. Todos los campos deben estar llenados");
+						JOptionPane.showMessageDialog(null,
+								"Error. No se permiten valores numericos para el nombre y uso");
 					}
-					
-					
-					
+
+				} else {
+					JOptionPane.showMessageDialog(null, "Error. Todos los campos deben estar llenados");
 				}
 			}
 		});
-		
+
 		return categorias_Editar;
 	}
 
@@ -793,7 +801,7 @@ public class Ventana extends JFrame {
 
 		JPanel panel_opciones = panel_Opciones();
 		categorias_Eliminar.add(panel_opciones);
-		
+
 		JLabel titulo_Panel_Categorias = new JLabel("Categorias", JLabel.CENTER);
 		titulo_Panel_Categorias.setSize(150, 30);
 		titulo_Panel_Categorias.setLocation(325, 30);
@@ -813,18 +821,17 @@ public class Ventana extends JFrame {
 		icono_editar.setIcon(new ImageIcon(foto_editar.getImage().getScaledInstance(icono_editar.getWidth(),
 				icono_editar.getHeight(), Image.SCALE_SMOOTH)));
 		categorias_Eliminar.add(icono_editar);
-		
-		
+
 		cmb.setSize(440, 30);
 		cmb.setLocation(325, 120);
 		categorias_Eliminar.add(cmb);
-		
+
 		JLabel instruccion = new JLabel("Selecciona la categoria que deseas eliminar");
 		instruccion.setSize(300, 30);
 		instruccion.setLocation(425, 150);
 		instruccion.setFont(new Font("Arial", Font.PLAIN, 12));
 		categorias_Eliminar.add(instruccion);
-		
+
 		JLabel nombre_categoria = new JLabel("Ingresa el nombre de la categoria");
 		nombre_categoria.setSize(300, 30);
 		nombre_categoria.setLocation(265, 210);
@@ -900,30 +907,31 @@ public class Ventana extends JFrame {
 		btn_Eliminar.setFont(new Font("Arial", Font.BOLD, 20));
 		btn_Eliminar.setForeground(Color.white);
 		categorias_Eliminar.add(btn_Eliminar);
-		
-		
+
 		btn_Volver.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				cmb.removeAllItems();
 				actual = "categorias";
 				route();
 			}
 		});
-		
+
 		btn_Eliminar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				conexion.eliminar_Categoria(in_nombre_categoria);
-				JOptionPane.showMessageDialog(null, "Categoria eliminada correctamente");
+				int confirmacion = JOptionPane.showConfirmDialog(null, "¿Está seguro de eliminar esta categoria?");
+				if (confirmacion == 0) {
+					conexion.eliminar_Categoria(cmb);
+					JOptionPane.showMessageDialog(null, "Categoria eliminada correctamente");
+				}
 			}
 		});
-		
+
 		return categorias_Eliminar;
 	}
-	
+
 	public JPanel marcas() {
 		JPanel marcas = new JPanel();
 		marcas.setVisible(true);
