@@ -3,10 +3,13 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 
+import com.mysql.jdbc.PreparedStatement;
 import com.mysql.jdbc.Statement;
 
 public class Conexion {
@@ -14,68 +17,39 @@ public class Conexion {
 	Statement stm = null;
 	ResultSet rs = null;
 	private static final String CONTROLADOR = "com.mysql.jdbc.Driver";
-	//EN ESTA LINEA SE PONE EL PUERTO AL QUE TE CONECTAS EN TU WORKBENCH Y EL NOMBRE QUE TIENE LA BD
+	// EN ESTA LINEA SE PONE EL PUERTO AL QUE TE CONECTAS EN TU WORKBENCH Y EL
+	// NOMBRE QUE TIENE LA BD
 	private static final String URL = "jdbc:mysql://localhost:3306/car_rental";
 	private static final String USUARIO = "root";
-	//EN ESTA LINEA SE PONE LA CONTRASE袮 QUE CONFIGURASTE PARA TU USUARIO A LA HORA DE INSTALAR WORKBENCH
-	private static final String CLAVE = "";
+	// EN ESTA LINEA SE PONE LA CONTRASE脩A QUE CONFIGURASTE PARA TU USUARIO A LA
+	// HORA DE INSTALAR WORKBENCH
+	private static final String CLAVE = "Bahialucila219";
 
 	public Connection conectar() {
 		Connection conexion = null;
 
 		try {
 			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
-			System.out.println("Conexi髇 OK");
+			System.out.println("Conexi贸n OK");
 
 		} catch (SQLException e) {
-			System.out.println("Error en la conexi髇");
+			System.out.println("Error en la conexi贸n");
 			e.printStackTrace();
 		}
 
 		return conexion;
 	}
 
-	/*
-	public void consultar() {
-		conexion = null;
-		stm = null;
-		rs = null;
-
-		try {
-			Class.forName(CONTROLADOR);
-			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
-			System.out.println("Conexi髇 OK");
-
-			stm = (Statement) conexion.createStatement();
-			rs = stm.executeQuery("SELECT * FROM cliente");
-
-			while (rs.next()) {
-				int idUsuario = rs.getInt(1);
-				String nombre = rs.getString(2);
-				String apellidos = rs.getString(3);
-				String numero_telefono = rs.getString(4);
-				String contrasena = rs.getString(5);
-				String fecha_nacimiento = rs.getString(6);
-
-				System.out.println(idUsuario + " - " + nombre + " - " + apellidos + " - " + numero_telefono + " - "
-						+ contrasena + " - " + fecha_nacimiento);
-			}
-		} catch (SQLException | ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}*/
-
-	public void validar_Inicio_Sesion(JTextField cliente, JPasswordField pwd) {
+	public boolean validar_Inicio_Sesion(JTextField cliente, JPasswordField pwd) {
 		conexion = null;
 		stm = null;
 		rs = null;
 		boolean acceso = false;
-		
+
 		try {
 			Class.forName(CONTROLADOR);
 			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
-			System.out.println("Conexi髇 OK");
+			System.out.println("Conexi贸n OK");
 
 			stm = (Statement) conexion.createStatement();
 			rs = stm.executeQuery("SELECT * FROM cliente");
@@ -87,19 +61,161 @@ public class Conexion {
 				String nombre_completo = nombre + " " + apellidos;
 				String contrasena_Formato_String = new String(pwd.getPassword());
 
-				if(nombre_completo.equals(cliente.getText()) && contrasena.equals(contrasena_Formato_String)) {
+				if (nombre_completo.equals(cliente.getText()) && contrasena.equals(contrasena_Formato_String)) {
 					acceso = true;
 					break;
 				}
 			}
-			if(acceso) {
+			if (acceso) {
 				JOptionPane.showMessageDialog(null, "Bienvenido");
-			}else {
+			} else {
 				JOptionPane.showMessageDialog(null, "Error. Datos incorrectos");
+				acceso = false;
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return acceso;
+	}
+
+	public void consultar_Categorias(DefaultTableModel tabla) {
+		conexion = null;
+		stm = null;
+		rs = null;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexi贸n OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM categoria");
+
+			while (rs.next()) {
+				tabla.addRow(new Object[] { rs.getString(1), rs.getInt(2), rs.getString(3), rs.getInt(4) });
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public boolean a帽adir_Categorias(JTextField nombre, JTextField cant_llantas, JTextField uso, JTextField peso) {
+		conexion = null;
+		stm = null;
+		rs = null;
+		Boolean existente = false;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexi贸n OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM categoria");
+
+			while (rs.next()) {
+				if (rs.getString(1).equals(nombre.getText())) {
+					existente = true;
+				}
+			}
+
+			if (existente == false) {
+				PreparedStatement stm = (PreparedStatement) conexion
+						.prepareStatement("INSERT INTO categoria VALUE(?,?,?,?)");
+				stm.setString(1, nombre.getText().trim());
+				stm.setInt(2, Integer.valueOf(cant_llantas.getText()));
+				stm.setString(3, uso.getText().trim());
+				stm.setInt(4, Integer.valueOf(peso.getText()));
+				stm.executeUpdate();
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return existente;
+	}
+
+	public void llenar_CMB_Categorias(JComboBox cmb) {
+		conexion = null;
+		stm = null;
+		rs = null;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexi贸n OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM categoria");
+
+			while (rs.next()) {
+				cmb.addItem(rs.getString(1));
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public boolean editar_Categoria(JTextField nombre, JTextField cant_llantas, JTextField uso, JTextField peso,
+			JComboBox cmb) {
+		conexion = null;
+		stm = null;
+		rs = null;
+		Boolean existente = false;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexi贸n OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM categoria");
+
+			while (rs.next()) {
+				if (rs.getString(1).equals(nombre.getText())) {
+					existente = true;
+				}
+			}
+
+			if (existente == false) {
+				PreparedStatement stm = (PreparedStatement) conexion.prepareStatement(
+						"UPDATE categoria set nombre = ?, cantidad_llantas = ?, uso = ?, peso_promedio = ? where nombre = Autobus");
+				stm.setString(1, nombre.getText().trim());
+				stm.setInt(2, Integer.valueOf(cant_llantas.getText()));
+				stm.setString(3, uso.getText().trim());
+				stm.setInt(4, Integer.valueOf(peso.getText()));
+				stm.executeUpdate();
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return existente;
+	}
+
+	public boolean eliminar_Categoria(JTextField nombre) {
+		conexion = null;
+		stm = null;
+		rs = null;
+		Boolean existente = false;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexi贸n OK");
+
+			PreparedStatement stm = (PreparedStatement) conexion
+					.prepareStatement("delete from categoria where nombre = " + nombre.getText());
+			
+			stm.executeUpdate();
+
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return existente;
 	}
 }
