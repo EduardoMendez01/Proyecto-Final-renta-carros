@@ -2,6 +2,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
+import java.util.Date;
 
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -24,6 +29,14 @@ public class Conexion {
 	// EN ESTA LINEA SE PONE LA CONTRASEÑA QUE CONFIGURASTE PARA TU USUARIO A LA
 	// HORA DE INSTALAR WORKBENCH
 	private static final String CLAVE = "Bahialucila219";
+	
+	Date fechaInicial_NuevaRenta;
+	Date fechaFinal_RentasPasadas;
+	Date fechaFinal_NuevaRenta;
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	java.sql.Date fecha_renta_sql;
+	java.sql.Date fecha_entrega_sql;
+	
 
 	public Connection conectar() {
 		Connection conexion = null;
@@ -102,6 +115,52 @@ public class Conexion {
 		}
 	}
 
+	public void consultar_Marcas(DefaultTableModel tabla) {
+		conexion = null;
+		stm = null;
+		rs = null;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM marca");
+
+			while (rs.next()) {
+				tabla.addRow(
+						new Object[] { rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), });
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void consultar_Clientes(DefaultTableModel tabla) {
+		conexion = null;
+		stm = null;
+		rs = null;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM cliente");
+
+			while (rs.next()) {
+				tabla.addRow(
+						new Object[] { rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6) });
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public void consultar_Vehiculos(DefaultTableModel tabla) {
 		conexion = null;
 		stm = null;
@@ -188,6 +247,76 @@ public class Conexion {
 		return existente;
 	}
 
+	public boolean añadir_Renta(JTextField nombre_cliente, JTextField apellidos_cliente, JTextField telefono_cliente, JTextField fecha_renta,
+			JTextField fecha_entrega, JComboBox cmb) {
+		conexion = null;
+		stm = null;
+		rs = null;
+		boolean vehiculo_ocupado = false;
+		int tarifa = 0;
+		String modelo = "";
+		
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM renta");
+
+			while (rs.next()) {
+				if (cmb.getSelectedItem().toString().contains(rs.getString(8))) {
+					try {
+						modelo = rs.getString(8);
+						fechaInicial_NuevaRenta = sdf.parse(fecha_renta.getText());
+						fechaFinal_NuevaRenta = sdf.parse(fecha_entrega.getText());
+						fechaFinal_RentasPasadas = sdf.parse(rs.getString(7));
+						fecha_renta_sql = new java.sql.Date(fechaInicial_NuevaRenta.getTime());
+						fecha_entrega_sql = new java.sql.Date(fechaFinal_NuevaRenta.getTime());
+						if(fechaInicial_NuevaRenta.before(fechaFinal_RentasPasadas)) {
+							vehiculo_ocupado = true;
+						}
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+			
+			rs = stm.executeQuery("SELECT * FROM vehiculo");
+
+			while (rs.next()) {
+				if (cmb.getSelectedItem().toString().contains(rs.getString(1))) {
+						tarifa = rs.getInt(5);
+					}
+				}
+			
+
+			if (vehiculo_ocupado == false) {
+				long diferencia_Dias = ChronoUnit.DAYS.between((Temporal) fechaInicial_NuevaRenta, (Temporal) fechaInicial_NuevaRenta);
+				int dias_renta = (int) diferencia_Dias;
+				double costo_total = dias_renta * tarifa;
+				PreparedStatement stm = (PreparedStatement) conexion
+						.prepareStatement("INSERT INTO renta VALUE(?,?,?,?,?,?,?,?,?)");
+
+				stm.setString(1, "0");
+				stm.setString(2, nombre_cliente.getText().trim());
+				stm.setString(3, apellidos_cliente.getText().trim());
+				stm.setString(4, telefono_cliente.getText().trim());;
+				stm.setInt(5, tarifa);
+				stm.setDate(6, fecha_renta_sql);
+				stm.setDate(7, fecha_renta_sql);
+				stm.setString(8, modelo);
+				stm.setDouble(9, costo_total);
+				stm.executeUpdate();
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return vehiculo_ocupado;
+	}
+	
 	public boolean añadir_Categorias(JTextField nombre, JTextField cant_llantas, JTextField uso, JTextField peso) {
 		conexion = null;
 		stm = null;
