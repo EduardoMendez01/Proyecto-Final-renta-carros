@@ -1,5 +1,7 @@
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -7,6 +9,7 @@ import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -22,6 +25,7 @@ public class Ventana extends JFrame {
 	private JPanel gran_panel = null;
 	Conexion conexion = new Conexion();
 	JComboBox cmb = new JComboBox();
+	JComboBox cmb_aux = new JComboBox();
 
 	public Ventana() {
 		this.setVisible(true);
@@ -314,7 +318,9 @@ public class Ventana extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				cmb.removeAllItems();
+				cmb_aux.removeAllItems();
 				conexion.llenar_CMB_Marcas(cmb);
+				conexion.llenar_CMB_Categorias(cmb_aux);
 				actual = "vehiculos_añadir";
 				route();
 			}
@@ -325,7 +331,9 @@ public class Ventana extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				cmb.removeAllItems();
+				cmb_aux.removeAllItems();
 				conexion.llenar_CMB_Vehiculos(cmb);
+				conexion.llenar_CMB_Categorias(cmb_aux);
 				actual = "vehiculos_editar";
 				route();
 			}
@@ -371,14 +379,14 @@ public class Ventana extends JFrame {
 		ImageIcon foto_consultar = new ImageIcon("consultar_icono.png");
 		JLabel icono_consultar = new JLabel();
 		icono_consultar.setSize(85, 85);
-		icono_consultar.setLocation(520, 10);
+		icono_consultar.setLocation(520, 25);
 		icono_consultar.setIcon(new ImageIcon(foto_consultar.getImage().getScaledInstance(icono_consultar.getWidth(),
 				icono_consultar.getHeight(), Image.SCALE_SMOOTH)));
 		vehiculos_Consultar.add(icono_consultar);
 
 		JLabel titulo_tabla_rentas = new JLabel("Historial de rentas");
 		titulo_tabla_rentas.setSize(130, 30);
-		titulo_tabla_rentas.setLocation(495, 100);
+		titulo_tabla_rentas.setLocation(495, 110);
 		titulo_tabla_rentas.setFont(new Font("Arial", Font.BOLD, 12));
 		vehiculos_Consultar.add(titulo_tabla_rentas);
 
@@ -456,20 +464,30 @@ public class Ventana extends JFrame {
 		ImageIcon foto_añadir = new ImageIcon("añadir_icono.png");
 		JLabel icono_añadir = new JLabel();
 		icono_añadir.setSize(85, 85);
-		icono_añadir.setLocation(520, 10);
+		icono_añadir.setLocation(520, 15);
 		icono_añadir.setIcon(new ImageIcon(foto_añadir.getImage().getScaledInstance(icono_añadir.getWidth(),
 				icono_añadir.getHeight(), Image.SCALE_SMOOTH)));
 		vehiculos_añadir.add(icono_añadir);
 
-		cmb.setSize(440, 30);
-		cmb.setLocation(325, 110);
+		cmb.setSize(200, 30);
+		cmb.setLocation(285, 110);
 		vehiculos_añadir.add(cmb);
+
+		cmb_aux.setSize(200, 30);
+		cmb_aux.setLocation(625, 110);
+		vehiculos_añadir.add(cmb_aux);
 
 		JLabel marca_vehículo = new JLabel("Selecciona la marca de el vehículo");
 		marca_vehículo.setSize(300, 30);
-		marca_vehículo.setLocation(425, 140);
-		marca_vehículo.setFont(new Font("Arial", Font.BOLD, 14));
+		marca_vehículo.setLocation(285, 140);
+		marca_vehículo.setFont(new Font("Arial", Font.BOLD, 12));
 		vehiculos_añadir.add(marca_vehículo);
+
+		JLabel categoria_vehículo = new JLabel("Selecciona la categoria de el vehículo");
+		categoria_vehículo.setSize(300, 30);
+		categoria_vehículo.setLocation(620, 140);
+		categoria_vehículo.setFont(new Font("Arial", Font.BOLD, 12));
+		vehiculos_añadir.add(categoria_vehículo);
 
 		JLabel nombre_vehículo = new JLabel("Ingresa el nombre de el vehículo");
 		nombre_vehículo.setSize(300, 30);
@@ -566,7 +584,7 @@ public class Ventana extends JFrame {
 					if (validarDigitos(in_nombre_vehiculo) && validarDigitos(in_transmision_vehiculo)) {
 						if (validarNumeros(in_año_vehiculo) && validarNumeros(in_tarifa_vehiculo)) {
 							if (!conexion.añadir_Vehiculo(in_nombre_vehiculo, in_modelo_vehiculo,
-									in_transmision_vehiculo, in_tarifa_vehiculo, in_año_vehiculo, cmb)) {
+									in_transmision_vehiculo, in_tarifa_vehiculo, in_año_vehiculo, cmb, cmb_aux)) {
 								JOptionPane.showMessageDialog(null, "Vehiculo añadido correctamente");
 								in_año_vehiculo.setText("");
 								in_modelo_vehiculo.setText("");
@@ -620,20 +638,30 @@ public class Ventana extends JFrame {
 		ImageIcon foto_editar = new ImageIcon("editar_icono.png");
 		JLabel icono_editar = new JLabel();
 		icono_editar.setSize(85, 85);
-		icono_editar.setLocation(520, 10);
+		icono_editar.setLocation(520, 15);
 		icono_editar.setIcon(new ImageIcon(foto_editar.getImage().getScaledInstance(icono_editar.getWidth(),
 				icono_editar.getHeight(), Image.SCALE_SMOOTH)));
 		vehiculos_editar.add(icono_editar);
 
-		cmb.setSize(440, 30);
-		cmb.setLocation(325, 120);
+		cmb.setSize(200, 30);
+		cmb.setLocation(285, 110);
 		vehiculos_editar.add(cmb);
 
-		JLabel instruccion = new JLabel("Selecciona el vehículo que deseas editar");
-		instruccion.setSize(300, 30);
-		instruccion.setLocation(425, 150);
-		instruccion.setFont(new Font("Arial", Font.PLAIN, 12));
-		vehiculos_editar.add(instruccion);
+		cmb_aux.setSize(200, 30);
+		cmb_aux.setLocation(625, 110);
+		vehiculos_editar.add(cmb_aux);
+
+		JLabel vehiculo = new JLabel("Selecciona el vehículo que deseas editar");
+		vehiculo.setSize(300, 30);
+		vehiculo.setLocation(275, 140);
+		vehiculo.setFont(new Font("Arial", Font.BOLD, 12));
+		vehiculos_editar.add(vehiculo);
+
+		JLabel categoria_vehículo = new JLabel("Selecciona la nueva categoria de el vehículo");
+		categoria_vehículo.setSize(300, 30);
+		categoria_vehículo.setLocation(610, 140);
+		categoria_vehículo.setFont(new Font("Arial", Font.BOLD, 12));
+		vehiculos_editar.add(categoria_vehículo);
 
 		JLabel nombre_vehículo = new JLabel("Ingresa el nombre de el vehículo");
 		nombre_vehículo.setSize(300, 30);
@@ -747,7 +775,7 @@ public class Ventana extends JFrame {
 									"¿Está seguro de editar este vehículo?");
 							if (confirmacion == 0) {
 								if (conexion.editar_Vehiculo(in_modelo_vehiculo, in_nombre_vehiculo, in_marca_vehiculo,
-										in_transmision_vehiculo, in_tarifa_vehiculo, in_año_vehiculo, cmb)) {
+										in_transmision_vehiculo, in_tarifa_vehiculo, in_año_vehiculo, cmb, cmb_aux)) {
 									JOptionPane.showMessageDialog(null, "Vehiculo editado correctamente");
 									in_año_vehiculo.setText("");
 									in_marca_vehiculo.setText("");
@@ -802,7 +830,7 @@ public class Ventana extends JFrame {
 		ImageIcon foto_editar = new ImageIcon("eliminar_icono.png");
 		JLabel icono_editar = new JLabel();
 		icono_editar.setSize(85, 85);
-		icono_editar.setLocation(520, 10);
+		icono_editar.setLocation(520, 20);
 		icono_editar.setIcon(new ImageIcon(foto_editar.getImage().getScaledInstance(icono_editar.getWidth(),
 				icono_editar.getHeight(), Image.SCALE_SMOOTH)));
 		vehiculos_eliminar.add(icono_editar);
@@ -1093,7 +1121,7 @@ public class Ventana extends JFrame {
 		ImageIcon foto_consultar = new ImageIcon("consultar_icono.png");
 		JLabel icono_consultar = new JLabel();
 		icono_consultar.setSize(85, 85);
-		icono_consultar.setLocation(520, 10);
+		icono_consultar.setLocation(520, 25);
 		icono_consultar.setIcon(new ImageIcon(foto_consultar.getImage().getScaledInstance(icono_consultar.getWidth(),
 				icono_consultar.getHeight(), Image.SCALE_SMOOTH)));
 		consultar_clientes.add(icono_consultar);
@@ -1155,7 +1183,7 @@ public class Ventana extends JFrame {
 		ImageIcon foto_añadir = new ImageIcon("añadir_icono.png");
 		JLabel icono_añadir = new JLabel();
 		icono_añadir.setSize(85, 85);
-		icono_añadir.setLocation(520, 10);
+		icono_añadir.setLocation(520, 15);
 		icono_añadir.setIcon(new ImageIcon(foto_añadir.getImage().getScaledInstance(icono_añadir.getWidth(),
 				icono_añadir.getHeight(), Image.SCALE_SMOOTH)));
 		crear_clientes.add(icono_añadir);
@@ -1285,7 +1313,7 @@ public class Ventana extends JFrame {
 		ImageIcon foto_editar = new ImageIcon("editar_icono.png");
 		JLabel icono_editar = new JLabel();
 		icono_editar.setSize(85, 85);
-		icono_editar.setLocation(520, 10);
+		icono_editar.setLocation(520, 15);
 		icono_editar.setIcon(new ImageIcon(foto_editar.getImage().getScaledInstance(icono_editar.getWidth(),
 				icono_editar.getHeight(), Image.SCALE_SMOOTH)));
 		editar_clientes.add(icono_editar);
@@ -1419,7 +1447,7 @@ public class Ventana extends JFrame {
 		ImageIcon foto_editar = new ImageIcon("eliminar_icono.png");
 		JLabel icono_editar = new JLabel();
 		icono_editar.setSize(85, 85);
-		icono_editar.setLocation(520, 10);
+		icono_editar.setLocation(520, 20);
 		icono_editar.setIcon(new ImageIcon(foto_editar.getImage().getScaledInstance(icono_editar.getWidth(),
 				icono_editar.getHeight(), Image.SCALE_SMOOTH)));
 		eliminar_cliente.add(icono_editar);
@@ -1681,7 +1709,7 @@ public class Ventana extends JFrame {
 		ImageIcon foto_consultar = new ImageIcon("consultar_icono.png");
 		JLabel icono_consultar = new JLabel();
 		icono_consultar.setSize(85, 85);
-		icono_consultar.setLocation(520, 10);
+		icono_consultar.setLocation(520, 25);
 		icono_consultar.setIcon(new ImageIcon(foto_consultar.getImage().getScaledInstance(icono_consultar.getWidth(),
 				icono_consultar.getHeight(), Image.SCALE_SMOOTH)));
 		rentas_Consultar.add(icono_consultar);
@@ -1749,7 +1777,7 @@ public class Ventana extends JFrame {
 		ImageIcon foto_añadir = new ImageIcon("añadir_icono.png");
 		JLabel icono_añadir = new JLabel();
 		icono_añadir.setSize(85, 85);
-		icono_añadir.setLocation(520, 10);
+		icono_añadir.setLocation(520, 15);
 		icono_añadir.setIcon(new ImageIcon(foto_añadir.getImage().getScaledInstance(icono_añadir.getWidth(),
 				icono_añadir.getHeight(), Image.SCALE_SMOOTH)));
 		rentas_añadir.add(icono_añadir);
@@ -1849,6 +1877,10 @@ public class Ventana extends JFrame {
 								if (conexion.añadir_Renta(in_nombre_cliente, in_apellidos_cliente, in_fecha_inicial,
 										in_fecha_final, cmb) == 0) {
 									JOptionPane.showMessageDialog(null, "Renta añadida correctamente");
+									in_apellidos_cliente.setText("");
+									in_fecha_final.setText("");
+									in_fecha_inicial.setText("");
+									in_nombre_cliente.setText("");
 								} else if (conexion.añadir_Renta(in_nombre_cliente, in_apellidos_cliente,
 										in_fecha_inicial, in_fecha_final, cmb) == 1) {
 									JOptionPane.showMessageDialog(null,
@@ -1857,6 +1889,9 @@ public class Ventana extends JFrame {
 										in_fecha_inicial, in_fecha_final, cmb) == 2) {
 									JOptionPane.showMessageDialog(null,
 											"Error. Este cliente no se encuentra registrado");
+								} else if (conexion.añadir_Renta(in_nombre_cliente, in_apellidos_cliente,
+										in_fecha_inicial, in_fecha_final, cmb) == 3) {
+									JOptionPane.showMessageDialog(null, "Error. Fecha de entrega no valida.");
 								}
 							} else {
 								JOptionPane.showMessageDialog(null,
@@ -1906,7 +1941,7 @@ public class Ventana extends JFrame {
 		ImageIcon foto_añadir = new ImageIcon("editar_icono.png");
 		JLabel icono_añadir = new JLabel();
 		icono_añadir.setSize(85, 85);
-		icono_añadir.setLocation(520, 10);
+		icono_añadir.setLocation(520, 15);
 		icono_añadir.setIcon(new ImageIcon(foto_añadir.getImage().getScaledInstance(icono_añadir.getWidth(),
 				icono_añadir.getHeight(), Image.SCALE_SMOOTH)));
 		rentas_editar.add(icono_añadir);
@@ -2009,6 +2044,10 @@ public class Ventana extends JFrame {
 									if (conexion.editar_rentas(in_nombre_cliente, in_apellidos_cliente,
 											in_fecha_inicial, in_fecha_final, cmb) == 0) {
 										JOptionPane.showMessageDialog(null, "Renta editada correctamente");
+										in_apellidos_cliente.setText("");
+										in_fecha_final.setText("");
+										in_fecha_inicial.setText("");
+										in_nombre_cliente.setText("");
 									} else if (conexion.editar_rentas(in_nombre_cliente, in_apellidos_cliente,
 											in_fecha_inicial, in_fecha_final, cmb) == 1) {
 										JOptionPane.showMessageDialog(null,
@@ -2017,6 +2056,9 @@ public class Ventana extends JFrame {
 											in_fecha_inicial, in_fecha_final, cmb) == 2) {
 										JOptionPane.showMessageDialog(null,
 												"Error. Este cliente no se encuentra registrado");
+									} else if (conexion.editar_rentas(in_nombre_cliente, in_apellidos_cliente,
+											in_fecha_inicial, in_fecha_final, cmb) == 3) {
+										JOptionPane.showMessageDialog(null, "Error. Fecha de entrega no valida");
 									}
 								}
 							} else {
@@ -2066,7 +2108,7 @@ public class Ventana extends JFrame {
 		ImageIcon foto_añadir = new ImageIcon("eliminar_icono.png");
 		JLabel icono_añadir = new JLabel();
 		icono_añadir.setSize(85, 85);
-		icono_añadir.setLocation(520, 10);
+		icono_añadir.setLocation(520, 20);
 		icono_añadir.setIcon(new ImageIcon(foto_añadir.getImage().getScaledInstance(icono_añadir.getWidth(),
 				icono_añadir.getHeight(), Image.SCALE_SMOOTH)));
 		rentas_eliminar.add(icono_añadir);
@@ -2132,7 +2174,7 @@ public class Ventana extends JFrame {
 		in_fecha_final.setFont(new Font("Arial", Font.PLAIN, 16));
 		in_fecha_final.setEditable(false);
 		rentas_eliminar.add(in_fecha_final);
-		
+
 		JButton btn_Volver = new JButton("Volver");
 		btn_Volver.setSize(250, 30);
 		btn_Volver.setLocation(275, 455);
@@ -2169,10 +2211,10 @@ public class Ventana extends JFrame {
 				}
 			}
 		});
-		
+
 		return rentas_eliminar;
 	}
-	
+
 	public JPanel categorias() {
 		JPanel categorias = new JPanel();
 		categorias.setVisible(true);
@@ -2331,20 +2373,21 @@ public class Ventana extends JFrame {
 		ImageIcon foto_consultar = new ImageIcon("consultar_icono.png");
 		JLabel icono_consultar = new JLabel();
 		icono_consultar.setSize(85, 85);
-		icono_consultar.setLocation(520, 10);
+		icono_consultar.setLocation(520, 25);
 		icono_consultar.setIcon(new ImageIcon(foto_consultar.getImage().getScaledInstance(icono_consultar.getWidth(),
 				icono_consultar.getHeight(), Image.SCALE_SMOOTH)));
 		categorias_consultar.add(icono_consultar);
 
-		String nombresColumna[] = { "ID", "Nombre", "Cantidad de llantas", "Uso", "Peso promedio (Kg)" };
+		String nombresColumna[] = { "Nombre de categoria", "Modelo de vehículo", "Cantidad de llantas", "Uso",
+				"Peso promedio (Kg)" };
 		JTable tabla = new JTable();
 		DefaultTableModel tablaModel = new DefaultTableModel();
 		tablaModel.setColumnIdentifiers(nombresColumna);
 		tabla.setModel(tablaModel);
 		conexion.consultar_Categorias(tablaModel);
 		JScrollPane sp = new JScrollPane(tabla);
-		sp.setSize(530, 300);
-		sp.setLocation(285, 140);
+		sp.setSize(610, 300);
+		sp.setLocation(245, 140);
 		categorias_consultar.add(sp);
 
 		JButton btn_Volver = new JButton("Volver");
@@ -2393,7 +2436,7 @@ public class Ventana extends JFrame {
 		ImageIcon foto_añadir = new ImageIcon("añadir_icono.png");
 		JLabel icono_añadir = new JLabel();
 		icono_añadir.setSize(85, 85);
-		icono_añadir.setLocation(520, 10);
+		icono_añadir.setLocation(520, 15);
 		icono_añadir.setIcon(new ImageIcon(foto_añadir.getImage().getScaledInstance(icono_añadir.getWidth(),
 				icono_añadir.getHeight(), Image.SCALE_SMOOTH)));
 		categorias_Añadir.add(icono_añadir);
@@ -2546,7 +2589,7 @@ public class Ventana extends JFrame {
 		ImageIcon foto_editar = new ImageIcon("editar_icono.png");
 		JLabel icono_editar = new JLabel();
 		icono_editar.setSize(85, 85);
-		icono_editar.setLocation(520, 10);
+		icono_editar.setLocation(520, 15);
 		icono_editar.setIcon(new ImageIcon(foto_editar.getImage().getScaledInstance(icono_editar.getWidth(),
 				icono_editar.getHeight(), Image.SCALE_SMOOTH)));
 		categorias_Editar.add(icono_editar);
@@ -2723,7 +2766,7 @@ public class Ventana extends JFrame {
 		ImageIcon foto_editar = new ImageIcon("eliminar_icono.png");
 		JLabel icono_editar = new JLabel();
 		icono_editar.setSize(85, 85);
-		icono_editar.setLocation(520, 10);
+		icono_editar.setLocation(520, 20);
 		icono_editar.setIcon(new ImageIcon(foto_editar.getImage().getScaledInstance(icono_editar.getWidth(),
 				icono_editar.getHeight(), Image.SCALE_SMOOTH)));
 		categorias_Eliminar.add(icono_editar);
@@ -2995,7 +3038,7 @@ public class Ventana extends JFrame {
 		ImageIcon foto_consultar = new ImageIcon("consultar_icono.png");
 		JLabel icono_consultar = new JLabel();
 		icono_consultar.setSize(85, 85);
-		icono_consultar.setLocation(520, 10);
+		icono_consultar.setLocation(520, 25);
 		icono_consultar.setIcon(new ImageIcon(foto_consultar.getImage().getScaledInstance(icono_consultar.getWidth(),
 				icono_consultar.getHeight(), Image.SCALE_SMOOTH)));
 		marcas_consultar.add(icono_consultar);
@@ -3057,7 +3100,7 @@ public class Ventana extends JFrame {
 		ImageIcon foto_añadir = new ImageIcon("añadir_icono.png");
 		JLabel icono_añadir = new JLabel();
 		icono_añadir.setSize(85, 85);
-		icono_añadir.setLocation(520, 10);
+		icono_añadir.setLocation(520, 15);
 		icono_añadir.setIcon(new ImageIcon(foto_añadir.getImage().getScaledInstance(icono_añadir.getWidth(),
 				icono_añadir.getHeight(), Image.SCALE_SMOOTH)));
 		añadir_marca.add(icono_añadir);
@@ -3175,7 +3218,7 @@ public class Ventana extends JFrame {
 		ImageIcon foto_editar = new ImageIcon("editar_icono.png");
 		JLabel icono_editar = new JLabel();
 		icono_editar.setSize(85, 85);
-		icono_editar.setLocation(520, 10);
+		icono_editar.setLocation(520, 15);
 		icono_editar.setIcon(new ImageIcon(foto_editar.getImage().getScaledInstance(icono_editar.getWidth(),
 				icono_editar.getHeight(), Image.SCALE_SMOOTH)));
 		editar_marca.add(icono_editar);
@@ -3303,7 +3346,7 @@ public class Ventana extends JFrame {
 		ImageIcon foto_editar = new ImageIcon("eliminar_icono.png");
 		JLabel icono_editar = new JLabel();
 		icono_editar.setSize(85, 85);
-		icono_editar.setLocation(520, 10);
+		icono_editar.setLocation(520, 20);
 		icono_editar.setIcon(new ImageIcon(foto_editar.getImage().getScaledInstance(icono_editar.getWidth(),
 				icono_editar.getHeight(), Image.SCALE_SMOOTH)));
 		eliminar_marca.add(icono_editar);
@@ -3548,4 +3591,20 @@ public class Ventana extends JFrame {
 			return false;
 		}
 	}
+
+	public void paint(Graphics g) {
+		super.paint(g);
+		if(actual.equals("login")) {
+			g.setColor(Color.white);
+			g.drawLine(460, 80, 460, 500);
+		}else {
+			g.setColor(Color.decode("#2F0909"));
+			g.drawLine(240, 50, 240, 526);
+			g.drawLine(883, 50, 883, 526);
+			g.drawLine(240, 50, 883, 50);
+			g.drawLine(240, 526, 883, 526);
+		}
+		
+	}
+
 }

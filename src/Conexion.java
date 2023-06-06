@@ -105,11 +105,12 @@ public class Conexion {
 			System.out.println("Conexión OK");
 
 			stm = (Statement) conexion.createStatement();
-			rs = stm.executeQuery("SELECT * FROM categoria");
+			rs = stm.executeQuery(
+					"select categoria.nombre, vehiculo.modelo, categoria.cantidad_llantas, categoria.uso, categoria.peso_promedio from vehiculo, categoria where categoria.nombre = vehiculo.categoria;");
 
 			while (rs.next()) {
 				tabla.addRow(
-						new Object[] { rs.getInt(1), rs.getString(2), rs.getInt(3), rs.getString(4), rs.getInt(5), });
+						new Object[] { rs.getString(1), rs.getString(2), rs.getInt(3), rs.getString(4), rs.getInt(5)});
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -210,7 +211,7 @@ public class Conexion {
 	}
 
 	public boolean añadir_Vehiculo(JTextField nombre, JTextField modelo, JTextField transmision, JTextField tarifa,
-			JTextField año, JComboBox cmb) {
+			JTextField año, JComboBox cmb, JComboBox cmb_aux) {
 		conexion = null;
 		stm = null;
 		rs = null;
@@ -232,7 +233,7 @@ public class Conexion {
 
 			if (existente == false) {
 				PreparedStatement stm = (PreparedStatement) conexion
-						.prepareStatement("INSERT INTO vehiculo VALUE(?,?,?,?,?,?)");
+						.prepareStatement("INSERT INTO vehiculo VALUE(?,?,?,?,?,?,?)");
 
 				stm.setString(1, modelo.getText().trim());
 				stm.setString(2, nombre.getText().trim());
@@ -240,6 +241,7 @@ public class Conexion {
 				stm.setString(4, transmision.getText().trim());
 				stm.setInt(5, Integer.valueOf(tarifa.getText()));
 				stm.setString(6, año.getText());
+				stm.setString(7, cmb_aux.getSelectedItem().toString());
 				stm.executeUpdate();
 			}
 		} catch (SQLException | ClassNotFoundException e) {
@@ -280,8 +282,9 @@ public class Conexion {
 				if (cmb.getSelectedItem().toString().contains(rs.getString(8))) {
 					try {
 						modelo = rs.getString(8);
+						fechaInicial_RentasPasadas = sdf.parse(rs.getString(6));
 						fechaFinal_RentasPasadas = sdf.parse(rs.getString(7));
-						if (fechaInicial_NuevaRenta.before(fechaFinal_RentasPasadas)) {
+						if (fechaInicial_NuevaRenta.before(fechaFinal_RentasPasadas) && fechaInicial_NuevaRenta.after(fechaInicial_RentasPasadas)) {
 							resultado = 1;
 						}
 					} catch (ParseException e) {
@@ -291,6 +294,10 @@ public class Conexion {
 				}
 			}
 
+			//SE VALIDA QUE LA FECHA DE ENTREGA DE LA RENTA NO SEA ANTERIOR A LA FECHA INICIAL
+			if(fechaInicial_NuevaRenta.after(fechaFinal_NuevaRenta)) {
+				resultado = 3;
+			}
 			// ESTE IF SIRVE PARA EN CASO DE QUE NO SE HAYA ENTRADO AL WHILE ANTERIOR PODER
 			// ASIGNARLE UN VALOR AL CAMPO MODELO
 			if (modelo.equals("")) {
@@ -495,7 +502,7 @@ public class Conexion {
 	 */
 
 	public boolean editar_Vehiculo(JTextField modelo, JTextField nombre, JTextField marca, JTextField transmision,
-			JTextField tarifa, JTextField año, JComboBox cmb) {
+			JTextField tarifa, JTextField año, JComboBox cmb, JComboBox cmb_aux) {
 		conexion = null;
 		stm = null;
 		rs = null;
@@ -525,13 +532,14 @@ public class Conexion {
 			}
 			if (existe) {
 				PreparedStatement stm = (PreparedStatement) conexion.prepareStatement(
-						"UPDATE vehiculo set nombre = ?, marca = ?, transmision = ?, tarifa = ?, año = ? where modelo = '"
+						"UPDATE vehiculo set nombre = ?, marca = ?, transmision = ?, tarifa = ?, año = ?, categoria = ? where modelo = '"
 								+ modelo_id + "'");
 				stm.setString(1, nombre.getText().trim());
 				stm.setString(2, marca.getText().trim());
 				stm.setString(3, transmision.getText().trim());
 				stm.setInt(4, Integer.valueOf(tarifa.getText()));
 				stm.setInt(5, Integer.valueOf(año.getText()));
+				stm.setString(6, cmb_aux.getSelectedItem().toString());
 				stm.executeUpdate();
 			}
 		} catch (SQLException | ClassNotFoundException e) {
@@ -665,6 +673,11 @@ public class Conexion {
 					}
 				}
 			}
+			
+			//SE VALIDA QUE LA FECHA DE ENTREGA DE LA RENTA NO SEA ANTERIOR A LA FECHA INICIAL
+			if(fechaInicial_NuevaRenta.after(fechaFinal_NuevaRenta)) {
+				resultado = 3;
+			}
 
 			// SE BUSCA LA TARIFA QUE LE PERTENECE AL VEHICULO
 			rs = stm.executeQuery("SELECT * FROM vehiculo");
@@ -764,7 +777,7 @@ public class Conexion {
 		stm = null;
 		rs = null;
 		int renta_id = 0;
-		
+
 		try {
 			Class.forName(CONTROLADOR);
 			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
