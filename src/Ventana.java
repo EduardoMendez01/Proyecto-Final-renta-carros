@@ -1196,12 +1196,6 @@ public class Ventana extends JFrame {
 		in_apellidos_cliente.setFont(new Font("Arial", Font.PLAIN, 16));
 		crear_clientes.add(in_apellidos_cliente);
 
-		JLabel contrasena_cliente = new JLabel("Ingresa su contraseña");
-		contrasena_cliente.setSize(300, 30);
-		contrasena_cliente.setLocation(260, 360);
-		contrasena_cliente.setFont(new Font("Arial", Font.BOLD, 16));
-		crear_clientes.add(contrasena_cliente);
-		
 		JLabel confirmar_contrasena = new JLabel("Confirme la contraseña");
 		confirmar_contrasena.setSize(300, 30);
 		confirmar_contrasena.setLocation(590, 360);
@@ -1214,6 +1208,11 @@ public class Ventana extends JFrame {
 		in_confirmar_contra.setFont(new Font("Arial", Font.PLAIN, 16));
 		crear_clientes.add(in_confirmar_contra);
 
+		JLabel contrasena_cliente = new JLabel("Ingresa su contraseña");
+		contrasena_cliente.setSize(300, 30);
+		contrasena_cliente.setLocation(260, 360);
+		contrasena_cliente.setFont(new Font("Arial", Font.BOLD, 16));
+		crear_clientes.add(contrasena_cliente);
 
 		JTextField in_contrasena_cliente = new JTextField();
 		in_contrasena_cliente.setSize(280, 30);
@@ -1248,43 +1247,6 @@ public class Ventana extends JFrame {
 		btn_Crear.setFont(new Font("Arial", Font.BOLD, 20));
 		btn_Crear.setForeground(Color.white);
 		crear_clientes.add(btn_Crear);
-		btn_Crear.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				if (!in_nombre_cliente.getText().isEmpty() && !in_apellidos_cliente.getText().isEmpty()
-					    && !in_numero_telefono.getText().isEmpty() && !in_contrasena_cliente.getText().isEmpty()
-					    && !in_fecha_nacimiento.getText().isEmpty()) {
-					    if (validarDigitos(in_nombre_cliente) && validarDigitos(in_apellidos_cliente)) {
-					        if (validarNumeros(in_numero_telefono) && validarNumeros(in_fecha_nacimiento)) {
-					            if (!conexion.añadir_cliente(in_nombre_cliente.getText(), in_apellidos_cliente.getText(),
-					                    in_numero_telefono.getText(), in_contrasena_cliente.getText(),
-					                     in_fecha_nacimiento.getText())) {
-					                JOptionPane.showMessageDialog(null, "Cliente añadido correctamente");
-					                in_nombre_cliente.setText("");
-					                in_apellidos_cliente.setText("");
-					                in_numero_telefono.setText("");
-					                in_contrasena_cliente.setText("");
-					                in_fecha_nacimiento.setText("");
-					            } else {
-					                JOptionPane.showMessageDialog(null, "Error. Este cliente ya se encuentra añadido");
-					            }
-					        } else {
-					            JOptionPane.showMessageDialog(null,
-					                    "Error. Solo se permiten valores numéricos para el número de teléfono y la fecha de nacimiento");
-					        }
-					    } else {
-					        JOptionPane.showMessageDialog(null,
-					                "Error. No se permiten valores numéricos para el nombre o apellidos del cliente");
-					    }
-					} else {
-					    JOptionPane.showMessageDialog(null, "Error. Todos los campos deben estar llenos");
-					}
-
-			}
-			
-		});
 
 		btn_Volver.addActionListener(new ActionListener() {
 			@Override
@@ -1411,16 +1373,6 @@ public class Ventana extends JFrame {
 		btn_Volver.setFont(new Font("Arial", Font.BOLD, 20));
 		btn_Volver.setForeground(Color.white);
 		editar_clientes.add(btn_Volver);
-		btn_Volver.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				actual = "clientes";
-				route();
-			}
-			
-		});
 
 		JButton btn_Editar = new JButton("Editar");
 		btn_Editar.setSize(250, 30);
@@ -1429,9 +1381,16 @@ public class Ventana extends JFrame {
 		btn_Editar.setFont(new Font("Arial", Font.BOLD, 20));
 		btn_Editar.setForeground(Color.white);
 		editar_clientes.add(btn_Editar);
-		
-		
-	    return editar_clientes;
+
+		btn_Volver.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				actual = "clientes";
+				route();
+			}
+		});
+		return editar_clientes;
 	}
 
 	public JPanel eliminar_cliente() {
@@ -3103,65 +3062,65 @@ public class Ventana extends JFrame {
 				icono_añadir.getHeight(), Image.SCALE_SMOOTH)));
 		añadir_marca.add(icono_añadir);
 
-		JLabel nombre_marca = new JLabel("Ingresa el nombre de la marca");
-		nombre_marca.setSize(300, 30);
-		nombre_marca.setLocation(265, 180);
-		nombre_marca.setFont(new Font("Arial", Font.BOLD, 16));
-		añadir_marca.add(nombre_marca);
+		JLabel nombre_vehículo = new JLabel("Ingresa el nombre de la marca");
+		nombre_vehículo.setSize(300, 30);
+		nombre_vehículo.setLocation(265, 180);
+		nombre_vehículo.setFont(new Font("Arial", Font.BOLD, 16));
+		añadir_marca.add(nombre_vehículo);
 
-		JTextField in_nombre_marca = new JTextField();
-		in_nombre_marca.setSize(280, 30);
-		in_nombre_marca.setLocation(250, 210);
-		in_nombre_marca.setFont(new Font("Arial", Font.PLAIN, 16));
-		añadir_marca.add(in_nombre_marca);
+		JTextField in_nombre_vehiculo = new JTextField();
+		in_nombre_vehiculo.setSize(280, 30);
+		in_nombre_vehiculo.setLocation(250, 210);
+		in_nombre_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		añadir_marca.add(in_nombre_vehiculo);
 
-		JLabel pais_origen_marca = new JLabel("Ingresa el pais de origen de la marca");
-		pais_origen_marca.setSize(300, 30);
-		pais_origen_marca.setLocation(255, 270);
-		pais_origen_marca.setFont(new Font("Arial", Font.BOLD, 16));
-		añadir_marca.add(pais_origen_marca);
+		JLabel modelo_vehiculo = new JLabel("Ingresa el pais de origen de la marca");
+		modelo_vehiculo.setSize(300, 30);
+		modelo_vehiculo.setLocation(255, 270);
+		modelo_vehiculo.setFont(new Font("Arial", Font.BOLD, 16));
+		añadir_marca.add(modelo_vehiculo);
 
-		JTextField in_pais_origen_marca = new JTextField();
-		in_pais_origen_marca.setSize(280, 30);
-		in_pais_origen_marca.setLocation(250, 300);
-		in_pais_origen_marca.setFont(new Font("Arial", Font.PLAIN, 16));
-		añadir_marca.add(in_pais_origen_marca);
+		JTextField in_modelo_vehiculo = new JTextField();
+		in_modelo_vehiculo.setSize(280, 30);
+		in_modelo_vehiculo.setLocation(250, 300);
+		in_modelo_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		añadir_marca.add(in_modelo_vehiculo);
 
-		JLabel representante_marca = new JLabel("Ingresa el representante de la marca");
-		representante_marca.setSize(300, 30);
-		representante_marca.setLocation(590, 180);
-		representante_marca.setFont(new Font("Arial", Font.BOLD, 16));
-		añadir_marca.add(representante_marca);
+		JLabel transmision_vehiculo = new JLabel("Ingresa el representante de la marca");
+		transmision_vehiculo.setSize(300, 30);
+		transmision_vehiculo.setLocation(590, 180);
+		transmision_vehiculo.setFont(new Font("Arial", Font.BOLD, 16));
+		añadir_marca.add(transmision_vehiculo);
 
-		JTextField in_representante_marca = new JTextField();
-		in_representante_marca.setSize(280, 30);
-		in_representante_marca.setLocation(585, 210);
-		in_representante_marca.setFont(new Font("Arial", Font.PLAIN, 16));
-		añadir_marca.add(in_representante_marca);
+		JTextField in_transmision_vehiculo = new JTextField();
+		in_transmision_vehiculo.setSize(280, 30);
+		in_transmision_vehiculo.setLocation(585, 210);
+		in_transmision_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		añadir_marca.add(in_transmision_vehiculo);
 
-		JLabel correo_contacto = new JLabel("Ingresa el correo de contacto");
-		correo_contacto.setSize(300, 30);
-		correo_contacto.setLocation(260, 360);
-		correo_contacto.setFont(new Font("Arial", Font.BOLD, 16));
-		añadir_marca.add(correo_contacto);
+		JLabel tarifa_vehiculo = new JLabel("Ingresa el correo de contacto");
+		tarifa_vehiculo.setSize(300, 30);
+		tarifa_vehiculo.setLocation(260, 360);
+		tarifa_vehiculo.setFont(new Font("Arial", Font.BOLD, 16));
+		añadir_marca.add(tarifa_vehiculo);
 
-		JTextField in_correo_contacto = new JTextField();
-		in_correo_contacto.setSize(280, 30);
-		in_correo_contacto.setLocation(250, 390);
-		in_correo_contacto.setFont(new Font("Arial", Font.PLAIN, 16));
-		añadir_marca.add(in_correo_contacto);
+		JTextField in_tarifa_vehiculo = new JTextField();
+		in_tarifa_vehiculo.setSize(280, 30);
+		in_tarifa_vehiculo.setLocation(250, 390);
+		in_tarifa_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		añadir_marca.add(in_tarifa_vehiculo);
 
-		JLabel numero_contacto = new JLabel("Ingresa el numero de contacto");
-		numero_contacto.setSize(300, 30);
-		numero_contacto.setLocation(590, 270);
-		numero_contacto.setFont(new Font("Arial", Font.BOLD, 16));
-		añadir_marca.add(numero_contacto);
+		JLabel año_vehiculo = new JLabel("Ingresa el numero de contacto");
+		año_vehiculo.setSize(300, 30);
+		año_vehiculo.setLocation(590, 270);
+		año_vehiculo.setFont(new Font("Arial", Font.BOLD, 16));
+		añadir_marca.add(año_vehiculo);
 
-		JTextField in_numero_contacto = new JTextField();
-		in_numero_contacto.setSize(280, 30);
-		in_numero_contacto.setLocation(585, 300);
-		in_numero_contacto.setFont(new Font("Arial", Font.PLAIN, 16));
-		añadir_marca.add(in_numero_contacto);
+		JTextField in_año_vehiculo = new JTextField();
+		in_año_vehiculo.setSize(280, 30);
+		in_año_vehiculo.setLocation(585, 300);
+		in_año_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		añadir_marca.add(in_año_vehiculo);
 
 		JButton btn_Volver = new JButton("Volver");
 		btn_Volver.setSize(250, 30);
@@ -3170,14 +3129,6 @@ public class Ventana extends JFrame {
 		btn_Volver.setFont(new Font("Arial", Font.BOLD, 20));
 		btn_Volver.setForeground(Color.white);
 		añadir_marca.add(btn_Volver);
-		btn_Volver.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				actual = "marcas";
-				route();
-			}
-		});
 
 		JButton btn_Crear = new JButton("Añadir");
 		btn_Crear.setSize(250, 30);
@@ -3186,65 +3137,17 @@ public class Ventana extends JFrame {
 		btn_Crear.setFont(new Font("Arial", Font.BOLD, 20));
 		btn_Crear.setForeground(Color.white);
 		añadir_marca.add(btn_Crear);
-		btn_Crear.addActionListener(new ActionListener() {
-			private boolean validarCorreo(String correo) {
-			    // Expresión regular para validar el formato del correo electrónico
-			    String patronCorreo = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
-			    return correo.matches(patronCorreo);
-			}
 
+		btn_Volver.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				if (!in_nombre_marca.getText().isEmpty() && !in_pais_origen_marca.getText().isEmpty()
-				        && !in_representante_marca.getText().isEmpty() && !in_correo_contacto.getText().isEmpty()
-				        && !in_numero_contacto.getText().isEmpty()) {
-				    if (validarDigitos(in_nombre_marca) && validarDigitos(in_representante_marca)) {
-				        if (validarCorreo(in_correo_contacto.getText()) && validarNumeros(in_numero_contacto)) {
-				            if (conexion.añadir_marca(in_nombre_marca.getText(), in_pais_origen_marca.getText(),
-				                    in_representante_marca.getText(), in_correo_contacto.getText(),
-				                    in_numero_contacto.getText(), cmb)) {
-				                JOptionPane.showMessageDialog(null, "Marca añadida correctamente");
-				                in_nombre_marca.setText("");
-				                in_pais_origen_marca.setText("");
-				                in_representante_marca.setText("");
-				                in_correo_contacto.setText("");
-				                in_numero_contacto.setText("");
-				            } else {
-				                JOptionPane.showMessageDialog(null, "Error. Esta marca ya se encuentra añadida");
-				            }
-				        } else {
-				            JOptionPane.showMessageDialog(null,
-				                    "Error. Solo se permiten valores numéricos para el número de contacto de la marca");
-				        }
-				    } else {
-				        JOptionPane.showMessageDialog(null,
-				                "Error. No se permiten valores numéricos para el nombre o representante de la marca");
-				    }
-				} else {
-				    JOptionPane.showMessageDialog(null, "Error. Todos los campos deben estar llenos");
-				}
-
-
+				actual = "marcas";
+				route();
 			}
-			
 		});
-		  
-
 		return añadir_marca;
 	}
-	
-	
-	public boolean validarAlfabeticos(String texto) {
-	    // Verificar si el texto contiene solo caracteres alfabéticos
-	    for (int i = 0; i < texto.length(); i++) {
-	        if (!Character.isLetter(texto.charAt(i))) {
-	            return false;
-	        }
-	    }
-	    return true;
-	}
-
 
 	public JPanel editar_marca() {
 		JPanel editar_marca = new JPanel();
@@ -3274,32 +3177,32 @@ public class Ventana extends JFrame {
 		icono_editar.setSize(85, 85);
 		icono_editar.setLocation(520, 10);
 		icono_editar.setIcon(new ImageIcon(foto_editar.getImage().getScaledInstance(icono_editar.getWidth(),
-		        icono_editar.getHeight(), Image.SCALE_SMOOTH)));
+				icono_editar.getHeight(), Image.SCALE_SMOOTH)));
 		editar_marca.add(icono_editar);
 
 		cmb.setSize(440, 30);
 		cmb.setLocation(325, 110);
 		editar_marca.add(cmb);
 
-		JLabel marca_vehículo = new JLabel("Selecciona la marca a editar");
+		JLabel marca_vehículo = new JLabel("Selecciona la marca ha editar");
 		marca_vehículo.setSize(300, 30);
 		marca_vehículo.setLocation(430, 140);
 		marca_vehículo.setFont(new Font("Arial", Font.BOLD, 14));
 		editar_marca.add(marca_vehículo);
 
-		JLabel nombre_marca = new JLabel("Ingresa el nombre de la marca");
-		nombre_marca.setSize(300, 30);
-		nombre_marca.setLocation(265, 180);
-		nombre_marca.setFont(new Font("Arial", Font.BOLD, 16));
-		editar_marca.add(nombre_marca);
+		JLabel nombre_vehículo = new JLabel("Ingresa el nombre de la marca");
+		nombre_vehículo.setSize(300, 30);
+		nombre_vehículo.setLocation(265, 180);
+		nombre_vehículo.setFont(new Font("Arial", Font.BOLD, 16));
+		editar_marca.add(nombre_vehículo);
 
-		JTextField in_nombre_marca = new JTextField();
-		in_nombre_marca.setSize(280, 30);
-		in_nombre_marca.setLocation(250, 210);
-		in_nombre_marca.setFont(new Font("Arial", Font.PLAIN, 16));
-		editar_marca.add(in_nombre_marca);
+		JTextField in_nombre_vehiculo = new JTextField();
+		in_nombre_vehiculo.setSize(280, 30);
+		in_nombre_vehiculo.setLocation(250, 210);
+		in_nombre_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
+		editar_marca.add(in_nombre_vehiculo);
 
-		JLabel pais_origen = new JLabel("Ingresa el país de origen de la marca");
+		JLabel pais_origen = new JLabel("Ingresa el pais de origen de la marca");
 		pais_origen.setSize(300, 30);
 		pais_origen.setLocation(255, 270);
 		pais_origen.setFont(new Font("Arial", Font.BOLD, 16));
@@ -3335,7 +3238,7 @@ public class Ventana extends JFrame {
 		in_correo_marca.setFont(new Font("Arial", Font.PLAIN, 16));
 		editar_marca.add(in_correo_marca);
 
-		JLabel numero_marca = new JLabel("Ingresa el número de contacto");
+		JLabel numero_marca = new JLabel("Ingresa el numero de contacto");
 		numero_marca.setSize(300, 30);
 		numero_marca.setLocation(590, 270);
 		numero_marca.setFont(new Font("Arial", Font.BOLD, 16));
@@ -3354,60 +3257,24 @@ public class Ventana extends JFrame {
 		btn_Volver.setFont(new Font("Arial", Font.BOLD, 20));
 		btn_Volver.setForeground(Color.white);
 		editar_marca.add(btn_Volver);
+
+		JButton btn_Crear = new JButton("Editar");
+		btn_Crear.setSize(250, 30);
+		btn_Crear.setLocation(575, 455);
+		btn_Crear.setBackground(Color.decode("#2A5729"));
+		btn_Crear.setFont(new Font("Arial", Font.BOLD, 20));
+		btn_Crear.setForeground(Color.white);
+		editar_marca.add(btn_Crear);
+
 		btn_Volver.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
 				actual = "marcas";
 				route();
 			}
 		});
-
-		JButton btn_editar = new JButton("Editar");
-		btn_editar.setSize(250, 30);
-		btn_editar.setLocation(575, 455);
-		btn_editar.setBackground(Color.decode("#2A5729"));
-		btn_editar.setFont(new Font("Arial", Font.BOLD, 20));
-		btn_editar.setForeground(Color.white);
-		editar_marca.add(btn_editar);
-
-
-	/*	
-		btn_editar.addActionListener(new ActionListener() {
-		    @Override
-		    public void actionPerformed(ActionEvent e) {
-		    	String nombre = in_nombre_marca.getText().trim();
-		    	String pais = in_pais_origen.getText().trim();
-		    	String representante = in_representante_marca.getText().trim();
-		    	String correo = in_correo_marca.getText().trim();
-		    	String numero = in_numero_marca.getText().trim();
-
-		    	if (!nombre.isEmpty() && !pais.isEmpty() && !representante.isEmpty() && !correo.isEmpty() && !numero.isEmpty()) {
-		    	    if (validarAlfabeticos(nombre) && validarAlfabeticos(representante)) {
-		    	        int confirmacion = JOptionPane.showConfirmDialog(null, "¿Está seguro de editar esta marca?");
-		    	        if (confirmacion == 0) {
-		    	            if (conexion.editar_Marca(nombre, pais, representante, correo, numero, cmb)) {
-		    	                JOptionPane.showMessageDialog(null, "Marca editada correctamente.");
-		    	                in_nombre_marca.setText("");
-		    	                in_pais_origen.setText("");
-		    	                in_representante_marca.setText("");
-		    	                in_correo_marca.setText("");
-		    	                in_numero_marca.setText("");
-		    	            } else {
-		    	                JOptionPane.showMessageDialog(null, "Error. La marca no existe o ya ha sido registrada con el mismo nombre.");
-		    	            }
-		    	        }
-		    	    } else {
-		    	        JOptionPane.showMessageDialog(null, "Error. Solo se permiten valores alfabéticos para el nombre y representante.");
-		    	    }
-		    	} else {
-		    	    JOptionPane.showMessageDialog(null, "Error. Todos los campos deben estar llenados.");
-		    	}
-
-		    }
-		});
-*/
 		return editar_marca;
-
 	}
 
 	public JPanel eliminar_marca() {
@@ -3518,6 +3385,15 @@ public class Ventana extends JFrame {
 		btn_Volver.setFont(new Font("Arial", Font.BOLD, 20));
 		btn_Volver.setForeground(Color.white);
 		eliminar_marca.add(btn_Volver);
+
+		JButton btn_Crear = new JButton("Eliminar");
+		btn_Crear.setSize(250, 30);
+		btn_Crear.setLocation(575, 455);
+		btn_Crear.setBackground(Color.decode("#2A5729"));
+		btn_Crear.setFont(new Font("Arial", Font.BOLD, 20));
+		btn_Crear.setForeground(Color.white);
+		eliminar_marca.add(btn_Crear);
+
 		btn_Volver.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -3526,16 +3402,6 @@ public class Ventana extends JFrame {
 				route();
 			}
 		});
-
-		JButton btn_eliminar = new JButton("Eliminar");
-		btn_eliminar.setSize(250, 30);
-		btn_eliminar.setLocation(575, 455);
-		btn_eliminar.setBackground(Color.decode("#2A5729"));
-		btn_eliminar.setFont(new Font("Arial", Font.BOLD, 20));
-		btn_eliminar.setForeground(Color.white);
-		eliminar_marca.add(btn_eliminar);
-		
-
 		return eliminar_marca;
 	}
 

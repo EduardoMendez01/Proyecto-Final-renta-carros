@@ -30,7 +30,7 @@ public class Conexion {
 	private static final String USUARIO = "root";
 	// EN ESTA LINEA SE PONE LA CONTRASEÑA QUE CONFIGURASTE PARA TU USUARIO A LA
 	// HORA DE INSTALAR WORKBENCH
-	private static final String CLAVE = "Elcasconegro1";
+	private static final String CLAVE = "Bahialucila219";
 
 	Date fechaInicial_RentasPasadas;
 	Date fechaInicial_NuevaRenta;
@@ -131,8 +131,8 @@ public class Conexion {
 			rs = stm.executeQuery("SELECT * FROM marca");
 
 			while (rs.next()) {
-				tabla.addRow(
-						new Object[] { rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), });
+				tabla.addRow(new Object[] { rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
+						rs.getString(5), });
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -154,15 +154,14 @@ public class Conexion {
 			rs = stm.executeQuery("SELECT * FROM cliente");
 
 			while (rs.next()) {
-				tabla.addRow(
-						new Object[] { rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6) });
+				tabla.addRow(new Object[] { rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
+						rs.getString(5), rs.getString(6) });
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-
 
 	public void consultar_Vehiculos(DefaultTableModel tabla) {
 		conexion = null;
@@ -210,100 +209,6 @@ public class Conexion {
 		}
 	}
 
-	public boolean añadir_cliente(String nombre_cliente, String numero_telefono, String apellidos_cliente, String contrasena_cliente,
-			String fecha_nacimiento) {
-		conexion = null;
-		PreparedStatement stm = null;
-		ResultSet rs = null;
-		Boolean cliente_existente = false;
-
-		try {
-			Class.forName(CONTROLADOR);
-	conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
-	System.out.println("Conexión OK");
-
-	stm = (PreparedStatement) conexion.prepareStatement("SELECT * FROM cliente WHERE nombre = ?");
-	stm.setString(1, nombre_cliente);
-	rs = stm.executeQuery();
-
-	while (rs.next()) {
-		cliente_existente = true;
-		break;
-	}
-
-	if (!cliente_existente) {
-		stm = (PreparedStatement) conexion.prepareStatement("INSERT INTO cliente (nombre, numero_telefono, apellidos, contrasena, fecha_nacimiento) VALUES (?, ?, ?, ?, ?)");
-		stm.setString(1, nombre_cliente.trim());
-		stm.setString(3, numero_telefono.trim());
-		stm.setString(2, apellidos_cliente.trim());
-		stm.setString(4, contrasena_cliente.trim());
-		stm.setString(5, fecha_nacimiento.trim());
-		stm.executeUpdate();
-	}
-		} catch (SQLException | ClassNotFoundException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (stm != null) {
-					stm.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-
-		return cliente_existente;
-	}
-	
-	public boolean añadir_marca(String nombre_marca, String pais_origen_marca, String representante_marca, String correo_contacto, String numero_contacto, JComboBox cmb) {
-	    conexion = null;
-	    PreparedStatement stm = null;
-	    ResultSet rs = null;
-	    boolean marca_existente = false;
-	    
-	    try {
-	        Class.forName(CONTROLADOR);
-	        conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
-	        System.out.println("Conexión OK");
-	        
-	        stm = (PreparedStatement) conexion.prepareStatement("SELECT * FROM marca WHERE nombre = ?");
-	        stm.setString(1, nombre_marca.trim());
-	        rs = stm.executeQuery();
-
-	        if (rs.next()) {
-	            marca_existente = true;
-	        }
-
-	        if (!marca_existente) {
-	            stm = (PreparedStatement) conexion.prepareStatement("INSERT INTO marca (nombre, pais_origen, representante, correo_contacto, numero_contacto) VALUES (?, ?, ?, ?, ?)");
-	            stm.setString(1, nombre_marca.trim());
-	            stm.setString(2, pais_origen_marca.trim());
-	            stm.setString(3, representante_marca.trim());
-	            stm.setString(4, correo_contacto.trim());
-	            stm.setString(5, numero_contacto.trim());
-	            stm.executeUpdate();
-	            return true;
-	        }
-	    } catch (SQLException | ClassNotFoundException e) {
-	        e.printStackTrace();
-	    } finally {
-	        try {
-	            if (rs != null) {
-	                rs.close();
-	            }
-	            if (stm != null) {
-	                stm.close();
-	            }
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	    }
-	    return false;
-	}
-	
 	public boolean añadir_Vehiculo(JTextField nombre, JTextField modelo, JTextField transmision, JTextField tarifa,
 			JTextField año, JComboBox cmb) {
 		conexion = null;
