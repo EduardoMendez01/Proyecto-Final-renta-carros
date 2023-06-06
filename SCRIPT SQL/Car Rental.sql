@@ -12,7 +12,8 @@ CREATE TABLE vehiculo(
     marca VARCHAR(35) NOT NULL,
     transmision VARCHAR(35) NOT NULL,
     tarifa DOUBLE NOT NULL,
-    año YEAR NOT NULL
+    año YEAR NOT NULL,
+    categoria VARCHAR(45)
 );
 
 -- CREAR TABLA CLIENTE
@@ -64,7 +65,7 @@ INSERT INTO cliente(nombre, apellidos, numero_telefono, contrasena, fecha_nacimi
 INSERT INTO categoria (nombre, cantidad_llantas, uso, peso_promedio) VALUE('Familiar', 4, 'Recreativo', 1500);
 
 -- AGREGANDO VEHICULO DE PRUEBA
-INSERT INTO vehiculo VALUE('Corvette', 'Aveo', 'Chevrolet', 'Estandar', 500, 2023);
+INSERT INTO vehiculo VALUE('Corvette', 'Aveo', 'Chevrolet', 'Estandar', 500, 2023, 'Familiar');
 
 -- AGREGANDO RENTA DE PRUEBA
 INSERT INTO renta (nombre_cliente, apellidos_cliente, numero_telefono_cliente, tarifa_renta, fecha_inicial_renta, fecha_final_renta, modelo_vehiculo, costo_final) 
