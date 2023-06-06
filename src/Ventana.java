@@ -115,6 +115,12 @@ public class Ventana extends JFrame {
 		if (actual.equals("rentas_añadir")) {
 			gran_panel = rentas_añadir();
 		}
+		if (actual.equals("rentas_editar")) {
+			gran_panel = rentas_editar();
+		}
+		if (actual.equals("rentas_eliminar")) {
+			gran_panel = rentas_eliminar();
+		}
 		this.add(gran_panel);
 		this.revalidate();
 		this.repaint();
@@ -1629,8 +1635,8 @@ public class Ventana extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				cmb.removeAllItems();
-				conexion.llenar_CMB_Vehiculos(cmb);
-				actual = "vehiculos_editar";
+				conexion.llenar_CMB_Rentas(cmb);
+				actual = "rentas_editar";
 				route();
 			}
 		});
@@ -1640,8 +1646,8 @@ public class Ventana extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				cmb.removeAllItems();
-				conexion.llenar_CMB_Vehiculos(cmb);
-				actual = "vehiculos_eliminar";
+				conexion.llenar_CMB_Rentas(cmb);
+				actual = "rentas_eliminar";
 				route();
 			}
 		});
@@ -1760,61 +1766,49 @@ public class Ventana extends JFrame {
 
 		JLabel nombre_cliente = new JLabel("Ingresa el nombre de el cliente");
 		nombre_cliente.setSize(300, 30);
-		nombre_cliente.setLocation(270, 180);
+		nombre_cliente.setLocation(270, 230);
 		nombre_cliente.setFont(new Font("Arial", Font.BOLD, 16));
 		rentas_añadir.add(nombre_cliente);
 
 		JTextField in_nombre_cliente = new JTextField();
 		in_nombre_cliente.setSize(280, 30);
-		in_nombre_cliente.setLocation(250, 210);
+		in_nombre_cliente.setLocation(250, 260);
 		in_nombre_cliente.setFont(new Font("Arial", Font.PLAIN, 16));
 		rentas_añadir.add(in_nombre_cliente);
 
 		JLabel apellidos_cliente = new JLabel("Ingresa los apellidos de el cliente");
 		apellidos_cliente.setSize(300, 30);
-		apellidos_cliente.setLocation(265, 270);
+		apellidos_cliente.setLocation(265, 320);
 		apellidos_cliente.setFont(new Font("Arial", Font.BOLD, 16));
 		rentas_añadir.add(apellidos_cliente);
 
 		JTextField in_apellidos_cliente = new JTextField();
 		in_apellidos_cliente.setSize(280, 30);
-		in_apellidos_cliente.setLocation(250, 300);
+		in_apellidos_cliente.setLocation(250, 350);
 		in_apellidos_cliente.setFont(new Font("Arial", Font.PLAIN, 16));
 		rentas_añadir.add(in_apellidos_cliente);
 
-		JLabel telefono_cliente = new JLabel("Ingresa el teléfono de el cliente");
-		telefono_cliente.setSize(300, 30);
-		telefono_cliente.setLocation(275, 360);
-		telefono_cliente.setFont(new Font("Arial", Font.BOLD, 16));
-		rentas_añadir.add(telefono_cliente);
-
-		JTextField in_telefono_cliente = new JTextField();
-		in_telefono_cliente.setSize(280, 30);
-		in_telefono_cliente.setLocation(250, 390);
-		in_telefono_cliente.setFont(new Font("Arial", Font.PLAIN, 16));
-		rentas_añadir.add(in_telefono_cliente);
-
-		JLabel fecha_inicial = new JLabel("Ingresa la fecha de renta");
+		JLabel fecha_inicial = new JLabel("Ingresa la fecha de renta (yyyy-mm-dd)");
 		fecha_inicial.setSize(300, 30);
-		fecha_inicial.setLocation(625, 180);
-		fecha_inicial.setFont(new Font("Arial", Font.BOLD, 16));
+		fecha_inicial.setLocation(590, 230);
+		fecha_inicial.setFont(new Font("Arial", Font.BOLD, 14));
 		rentas_añadir.add(fecha_inicial);
 
 		JTextField in_fecha_inicial = new JTextField();
 		in_fecha_inicial.setSize(280, 30);
-		in_fecha_inicial.setLocation(585, 210);
+		in_fecha_inicial.setLocation(585, 260);
 		in_fecha_inicial.setFont(new Font("Arial", Font.PLAIN, 16));
 		rentas_añadir.add(in_fecha_inicial);
 
-		JLabel fecha_final = new JLabel("Ingresa la fecha de entrega");
+		JLabel fecha_final = new JLabel("Ingresa la fecha de entrega (yyyy-mm-dd)");
 		fecha_final.setSize(300, 30);
-		fecha_final.setLocation(620, 270);
-		fecha_final.setFont(new Font("Arial", Font.BOLD, 16));
+		fecha_final.setLocation(582, 320);
+		fecha_final.setFont(new Font("Arial", Font.BOLD, 14));
 		rentas_añadir.add(fecha_final);
 
 		JTextField in_fecha_final = new JTextField();
 		in_fecha_final.setSize(280, 30);
-		in_fecha_final.setLocation(585, 300);
+		in_fecha_final.setLocation(585, 350);
 		in_fecha_final.setFont(new Font("Arial", Font.PLAIN, 16));
 		rentas_añadir.add(in_fecha_final);
 
@@ -1847,12 +1841,38 @@ public class Ventana extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				if (!conexion.añadir_Renta(in_nombre_cliente, in_apellidos_cliente, in_telefono_cliente,
-						in_fecha_inicial, in_fecha_final, cmb)) {
-					JOptionPane.showMessageDialog(null, "Renta añadida correctamente");
+				if (!in_nombre_cliente.getText().isEmpty() && !in_apellidos_cliente.getText().isEmpty()
+						&& !in_fecha_inicial.getText().isEmpty() && !in_fecha_final.getText().isEmpty()) {
+					if (validarDigitos(in_nombre_cliente) && validarDigitos(in_apellidos_cliente)) {
+						if (validarNumeros(in_fecha_inicial) && validarNumeros(in_fecha_final)) {
+							if (validarFecha(in_fecha_final) && validarFecha(in_fecha_inicial)) {
+								if (conexion.añadir_Renta(in_nombre_cliente, in_apellidos_cliente, in_fecha_inicial,
+										in_fecha_final, cmb) == 0) {
+									JOptionPane.showMessageDialog(null, "Renta añadida correctamente");
+								} else if (conexion.añadir_Renta(in_nombre_cliente, in_apellidos_cliente,
+										in_fecha_inicial, in_fecha_final, cmb) == 1) {
+									JOptionPane.showMessageDialog(null,
+											"Error. Este vehículo ya se encuentra rentado entre estas fechas");
+								} else if (conexion.añadir_Renta(in_nombre_cliente, in_apellidos_cliente,
+										in_fecha_inicial, in_fecha_final, cmb) == 2) {
+									JOptionPane.showMessageDialog(null,
+											"Error. Este cliente no se encuentra registrado");
+								}
+							} else {
+								JOptionPane.showMessageDialog(null,
+										"Error. Ingrese un formato de fecha correcto (yyyy-mm-dd)");
+							}
+						} else {
+							JOptionPane.showMessageDialog(null,
+									"Error. Solo se permiten valores numericos para las fechas de renta");
+						}
+					} else {
+						JOptionPane.showMessageDialog(null,
+								"Error. No se permiten valores numericos para el nombre y apellido de el cliente");
+					}
+
 				} else {
-					JOptionPane.showMessageDialog(null,
-							"Error. Este vehículo ya se encuentra rentado entre esas fechas");
+					JOptionPane.showMessageDialog(null, "Error. Todos los campos deben estar llenados");
 				}
 			}
 		});
@@ -1860,6 +1880,299 @@ public class Ventana extends JFrame {
 		return rentas_añadir;
 	}
 
+	public JPanel rentas_editar() {
+		JPanel rentas_editar = new JPanel();
+		rentas_editar.setVisible(true);
+		rentas_editar.setSize(900, 550);
+		rentas_editar.setLocation(0, 0);
+		rentas_editar.setBackground(Color.decode("#D9D9D9"));
+		rentas_editar.setLayout(null);
+
+		JPanel panel_opciones = panel_Opciones();
+		rentas_editar.add(panel_opciones);
+
+		JLabel titulo_Panel_Rentas = new JLabel("Rentas", JLabel.CENTER);
+		titulo_Panel_Rentas.setSize(150, 30);
+		titulo_Panel_Rentas.setLocation(325, 30);
+		titulo_Panel_Rentas.setFont(new Font("Arial", Font.BOLD, 23));
+		rentas_editar.add(titulo_Panel_Rentas);
+
+		JLabel titulo_Panel_Rentas_Editar = new JLabel("Editar");
+		titulo_Panel_Rentas_Editar.setSize(180, 30);
+		titulo_Panel_Rentas_Editar.setLocation(655, 30);
+		titulo_Panel_Rentas_Editar.setFont(new Font("Arial", Font.BOLD, 23));
+		rentas_editar.add(titulo_Panel_Rentas_Editar);
+
+		ImageIcon foto_añadir = new ImageIcon("editar_icono.png");
+		JLabel icono_añadir = new JLabel();
+		icono_añadir.setSize(85, 85);
+		icono_añadir.setLocation(520, 10);
+		icono_añadir.setIcon(new ImageIcon(foto_añadir.getImage().getScaledInstance(icono_añadir.getWidth(),
+				icono_añadir.getHeight(), Image.SCALE_SMOOTH)));
+		rentas_editar.add(icono_añadir);
+
+		cmb.setSize(440, 30);
+		cmb.setLocation(325, 110);
+		rentas_editar.add(cmb);
+
+		JLabel vehiculo_renta = new JLabel("Selecciona la renta que deseas editar");
+		vehiculo_renta.setSize(300, 30);
+		vehiculo_renta.setLocation(415, 140);
+		vehiculo_renta.setFont(new Font("Arial", Font.BOLD, 14));
+		rentas_editar.add(vehiculo_renta);
+
+		JLabel nombre_cliente = new JLabel("Ingresa el nombre de el cliente");
+		nombre_cliente.setSize(300, 30);
+		nombre_cliente.setLocation(270, 230);
+		nombre_cliente.setFont(new Font("Arial", Font.BOLD, 16));
+		rentas_editar.add(nombre_cliente);
+
+		JTextField in_nombre_cliente = new JTextField();
+		in_nombre_cliente.setSize(280, 30);
+		in_nombre_cliente.setLocation(250, 260);
+		in_nombre_cliente.setFont(new Font("Arial", Font.PLAIN, 16));
+		rentas_editar.add(in_nombre_cliente);
+
+		JLabel apellidos_cliente = new JLabel("Ingresa los apellidos de el cliente");
+		apellidos_cliente.setSize(300, 30);
+		apellidos_cliente.setLocation(265, 320);
+		apellidos_cliente.setFont(new Font("Arial", Font.BOLD, 16));
+		rentas_editar.add(apellidos_cliente);
+
+		JTextField in_apellidos_cliente = new JTextField();
+		in_apellidos_cliente.setSize(280, 30);
+		in_apellidos_cliente.setLocation(250, 350);
+		in_apellidos_cliente.setFont(new Font("Arial", Font.PLAIN, 16));
+		rentas_editar.add(in_apellidos_cliente);
+
+		JLabel fecha_inicial = new JLabel("Ingresa la fecha de renta (yyyy-mm-dd)");
+		fecha_inicial.setSize(300, 30);
+		fecha_inicial.setLocation(590, 230);
+		fecha_inicial.setFont(new Font("Arial", Font.BOLD, 14));
+		rentas_editar.add(fecha_inicial);
+
+		JTextField in_fecha_inicial = new JTextField();
+		in_fecha_inicial.setSize(280, 30);
+		in_fecha_inicial.setLocation(585, 260);
+		in_fecha_inicial.setFont(new Font("Arial", Font.PLAIN, 16));
+		rentas_editar.add(in_fecha_inicial);
+
+		JLabel fecha_final = new JLabel("Ingresa la fecha de entrega (yyyy-mm-dd)");
+		fecha_final.setSize(300, 30);
+		fecha_final.setLocation(582, 320);
+		fecha_final.setFont(new Font("Arial", Font.BOLD, 14));
+		rentas_editar.add(fecha_final);
+
+		JTextField in_fecha_final = new JTextField();
+		in_fecha_final.setSize(280, 30);
+		in_fecha_final.setLocation(585, 350);
+		in_fecha_final.setFont(new Font("Arial", Font.PLAIN, 16));
+		rentas_editar.add(in_fecha_final);
+
+		JButton btn_Volver = new JButton("Volver");
+		btn_Volver.setSize(250, 30);
+		btn_Volver.setLocation(275, 455);
+		btn_Volver.setBackground(Color.decode("#2F0909"));
+		btn_Volver.setFont(new Font("Arial", Font.BOLD, 20));
+		btn_Volver.setForeground(Color.white);
+		rentas_editar.add(btn_Volver);
+
+		JButton btn_editar = new JButton("Editar");
+		btn_editar.setSize(250, 30);
+		btn_editar.setLocation(575, 455);
+		btn_editar.setBackground(Color.decode("#2A5729"));
+		btn_editar.setFont(new Font("Arial", Font.BOLD, 20));
+		btn_editar.setForeground(Color.white);
+		rentas_editar.add(btn_editar);
+
+		btn_Volver.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				actual = "rentas";
+				route();
+			}
+		});
+
+		btn_editar.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if (!in_nombre_cliente.getText().isEmpty() && !in_apellidos_cliente.getText().isEmpty()
+						&& !in_fecha_inicial.getText().isEmpty() && !in_fecha_final.getText().isEmpty()) {
+					if (validarDigitos(in_nombre_cliente) && validarDigitos(in_apellidos_cliente)) {
+						if (validarNumeros(in_fecha_inicial) && validarNumeros(in_fecha_final)) {
+							if (validarFecha(in_fecha_final) && validarFecha(in_fecha_inicial)) {
+								int confirmacion = JOptionPane.showConfirmDialog(null,
+										"¿Está seguro de editar esta renta?");
+								if (confirmacion == 0) {
+									if (conexion.editar_rentas(in_nombre_cliente, in_apellidos_cliente,
+											in_fecha_inicial, in_fecha_final, cmb) == 0) {
+										JOptionPane.showMessageDialog(null, "Renta editada correctamente");
+									} else if (conexion.editar_rentas(in_nombre_cliente, in_apellidos_cliente,
+											in_fecha_inicial, in_fecha_final, cmb) == 1) {
+										JOptionPane.showMessageDialog(null,
+												"Error. Compruebe que las fechas no se cruzen con otras rentas");
+									} else if (conexion.editar_rentas(in_nombre_cliente, in_apellidos_cliente,
+											in_fecha_inicial, in_fecha_final, cmb) == 2) {
+										JOptionPane.showMessageDialog(null,
+												"Error. Este cliente no se encuentra registrado");
+									}
+								}
+							} else {
+								JOptionPane.showMessageDialog(null,
+										"Error. Ingrese un formato de fecha correcto (yyyy-mm-dd)");
+							}
+						} else {
+							JOptionPane.showMessageDialog(null,
+									"Error. Solo se permiten valores numericos para las fechas de renta");
+						}
+					} else {
+						JOptionPane.showMessageDialog(null,
+								"Error. No se permiten valores numericos para el nombre y apellido de el cliente");
+					}
+
+				} else {
+					JOptionPane.showMessageDialog(null, "Error. Todos los campos deben estar llenados");
+				}
+			}
+		});
+		return rentas_editar;
+	}
+
+	public JPanel rentas_eliminar() {
+		JPanel rentas_eliminar = new JPanel();
+		rentas_eliminar.setVisible(true);
+		rentas_eliminar.setSize(900, 550);
+		rentas_eliminar.setLocation(0, 0);
+		rentas_eliminar.setBackground(Color.decode("#D9D9D9"));
+		rentas_eliminar.setLayout(null);
+
+		JPanel panel_opciones = panel_Opciones();
+		rentas_eliminar.add(panel_opciones);
+
+		JLabel titulo_Panel_Rentas = new JLabel("Rentas", JLabel.CENTER);
+		titulo_Panel_Rentas.setSize(150, 30);
+		titulo_Panel_Rentas.setLocation(325, 30);
+		titulo_Panel_Rentas.setFont(new Font("Arial", Font.BOLD, 23));
+		rentas_eliminar.add(titulo_Panel_Rentas);
+
+		JLabel titulo_Panel_Rentas_Eliminar = new JLabel("Eliminar");
+		titulo_Panel_Rentas_Eliminar.setSize(180, 30);
+		titulo_Panel_Rentas_Eliminar.setLocation(655, 30);
+		titulo_Panel_Rentas_Eliminar.setFont(new Font("Arial", Font.BOLD, 23));
+		rentas_eliminar.add(titulo_Panel_Rentas_Eliminar);
+
+		ImageIcon foto_añadir = new ImageIcon("eliminar_icono.png");
+		JLabel icono_añadir = new JLabel();
+		icono_añadir.setSize(85, 85);
+		icono_añadir.setLocation(520, 10);
+		icono_añadir.setIcon(new ImageIcon(foto_añadir.getImage().getScaledInstance(icono_añadir.getWidth(),
+				icono_añadir.getHeight(), Image.SCALE_SMOOTH)));
+		rentas_eliminar.add(icono_añadir);
+
+		cmb.setSize(440, 30);
+		cmb.setLocation(325, 110);
+		rentas_eliminar.add(cmb);
+
+		JLabel vehiculo_renta = new JLabel("Selecciona la renta que deseas eliminar");
+		vehiculo_renta.setSize(300, 30);
+		vehiculo_renta.setLocation(415, 140);
+		vehiculo_renta.setFont(new Font("Arial", Font.BOLD, 14));
+		rentas_eliminar.add(vehiculo_renta);
+
+		JLabel nombre_cliente = new JLabel("Ingresa el nombre de el cliente");
+		nombre_cliente.setSize(300, 30);
+		nombre_cliente.setLocation(270, 230);
+		nombre_cliente.setFont(new Font("Arial", Font.BOLD, 16));
+		rentas_eliminar.add(nombre_cliente);
+
+		JTextField in_nombre_cliente = new JTextField();
+		in_nombre_cliente.setSize(280, 30);
+		in_nombre_cliente.setLocation(250, 260);
+		in_nombre_cliente.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_nombre_cliente.setEditable(false);
+		rentas_eliminar.add(in_nombre_cliente);
+
+		JLabel apellidos_cliente = new JLabel("Ingresa los apellidos de el cliente");
+		apellidos_cliente.setSize(300, 30);
+		apellidos_cliente.setLocation(265, 320);
+		apellidos_cliente.setFont(new Font("Arial", Font.BOLD, 16));
+		rentas_eliminar.add(apellidos_cliente);
+
+		JTextField in_apellidos_cliente = new JTextField();
+		in_apellidos_cliente.setSize(280, 30);
+		in_apellidos_cliente.setLocation(250, 350);
+		in_apellidos_cliente.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_apellidos_cliente.setEditable(false);
+		rentas_eliminar.add(in_apellidos_cliente);
+
+		JLabel fecha_inicial = new JLabel("Ingresa la fecha de renta (yyyy-mm-dd)");
+		fecha_inicial.setSize(300, 30);
+		fecha_inicial.setLocation(590, 230);
+		fecha_inicial.setFont(new Font("Arial", Font.BOLD, 14));
+		rentas_eliminar.add(fecha_inicial);
+
+		JTextField in_fecha_inicial = new JTextField();
+		in_fecha_inicial.setSize(280, 30);
+		in_fecha_inicial.setLocation(585, 260);
+		in_fecha_inicial.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_fecha_inicial.setEditable(false);
+		rentas_eliminar.add(in_fecha_inicial);
+
+		JLabel fecha_final = new JLabel("Ingresa la fecha de entrega (yyyy-mm-dd)");
+		fecha_final.setSize(300, 30);
+		fecha_final.setLocation(582, 320);
+		fecha_final.setFont(new Font("Arial", Font.BOLD, 14));
+		rentas_eliminar.add(fecha_final);
+
+		JTextField in_fecha_final = new JTextField();
+		in_fecha_final.setSize(280, 30);
+		in_fecha_final.setLocation(585, 350);
+		in_fecha_final.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_fecha_final.setEditable(false);
+		rentas_eliminar.add(in_fecha_final);
+		
+		JButton btn_Volver = new JButton("Volver");
+		btn_Volver.setSize(250, 30);
+		btn_Volver.setLocation(275, 455);
+		btn_Volver.setBackground(Color.decode("#2A5729"));
+		btn_Volver.setFont(new Font("Arial", Font.BOLD, 20));
+		btn_Volver.setForeground(Color.white);
+		rentas_eliminar.add(btn_Volver);
+
+		JButton btn_Eliminar = new JButton("Eliminar");
+		btn_Eliminar.setSize(250, 30);
+		btn_Eliminar.setLocation(575, 455);
+		btn_Eliminar.setBackground(Color.decode("#2F0909"));
+		btn_Eliminar.setFont(new Font("Arial", Font.BOLD, 20));
+		btn_Eliminar.setForeground(Color.white);
+		rentas_eliminar.add(btn_Eliminar);
+
+		btn_Volver.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				actual = "rentas";
+				route();
+			}
+		});
+
+		btn_Eliminar.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				int confirmacion = JOptionPane.showConfirmDialog(null, "¿Está seguro de eliminar esta renta?");
+				if (confirmacion == 0) {
+					conexion.eliminar_Renta(cmb);
+					JOptionPane.showMessageDialog(null, "Renta eliminada correctamente");
+				}
+			}
+		});
+		
+		return rentas_eliminar;
+	}
+	
 	public JPanel categorias() {
 		JPanel categorias = new JPanel();
 		categorias.setVisible(true);
@@ -3217,7 +3530,7 @@ public class Ventana extends JFrame {
 		char arreglo_Numeros;
 		for (int i = 0; i < campo.getText().length(); i++) {
 			arreglo_Numeros = campo.getText().charAt(i);
-			if (!Character.isDigit(arreglo_Numeros)) {
+			if (!Character.isDigit(arreglo_Numeros) && arreglo_Numeros != '-') {
 				return false;
 			}
 		}
@@ -3227,7 +3540,9 @@ public class Ventana extends JFrame {
 	public boolean validarFecha(JTextField campo) {
 		String line_fecha = campo.getText();
 		String[] fecha = line_fecha.split("-");
-		if (fecha[0].length() == 4 && fecha[1].length() == 2 && fecha[2].length() == 2) {
+		if (fecha[0].length() == 4 && fecha[1].length() == 2 && fecha[2].length() == 2 && Integer.valueOf(fecha[1]) > 0
+				&& Integer.valueOf(fecha[1]) <= 12 && Integer.valueOf(fecha[2]) > 0
+				&& Integer.valueOf(fecha[2]) <= 31) {
 			return true;
 		} else {
 			return false;
