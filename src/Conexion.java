@@ -30,7 +30,7 @@ public class Conexion {
 	private static final String USUARIO = "root";
 	// EN ESTA LINEA SE PONE LA CONTRASEÑA QUE CONFIGURASTE PARA TU USUARIO A LA
 	// HORA DE INSTALAR WORKBENCH
-	private static final String CLAVE = "Elcasconegro1";
+	private static final String CLAVE = "Bahialucila219";
 
 	Date fechaInicial_RentasPasadas;
 	Date fechaInicial_NuevaRenta;
