@@ -108,11 +108,11 @@ public class Conexion {
 
 			stm = (Statement) conexion.createStatement();
 			rs = stm.executeQuery(
-					"select categoria.nombre, vehiculo.modelo, categoria.cantidad_llantas, categoria.uso, categoria.peso_promedio from vehiculo, categoria where categoria.nombre = vehiculo.categoria;");
+					"select categoria.nombre, vehiculo.modelo, vehiculo.año, categoria.cantidad_llantas, categoria.uso, categoria.peso_promedio from vehiculo, categoria where categoria.nombre = vehiculo.categoria AND categoria.es_visible = true AND vehiculo.es_visible = true");
 
 			while (rs.next()) {
-				tabla.addRow(
-						new Object[] { rs.getString(1), rs.getString(2), rs.getInt(3), rs.getString(4), rs.getInt(5) });
+				tabla.addRow(new Object[] { rs.getString(1), rs.getString(2), rs.getInt(3), rs.getInt(4),
+						rs.getString(5), rs.getInt(6) });
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -131,7 +131,7 @@ public class Conexion {
 			System.out.println("Conexión OK");
 
 			stm = (Statement) conexion.createStatement();
-			rs = stm.executeQuery("SELECT * FROM marca");
+			rs = stm.executeQuery("SELECT * FROM marca where es_visible = true");
 
 			while (rs.next()) {
 				tabla.addRow(new Object[] { rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
@@ -154,7 +154,7 @@ public class Conexion {
 			System.out.println("Conexión OK");
 
 			stm = (Statement) conexion.createStatement();
-			rs = stm.executeQuery("SELECT * FROM cliente");
+			rs = stm.executeQuery("SELECT * FROM cliente where es_visible = true");
 
 			while (rs.next()) {
 				tabla.addRow(new Object[] { rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
@@ -166,7 +166,7 @@ public class Conexion {
 		}
 	}
 
-	public void consultar_Vehiculos(DefaultTableModel tabla) {
+	public void consultar_Vehiculos(DefaultTableModel tabla_Rentas, DefaultTableModel tabla_Tarifas, JComboBox cmb) {
 		conexion = null;
 		stm = null;
 		rs = null;
@@ -177,10 +177,22 @@ public class Conexion {
 			System.out.println("Conexión OK");
 
 			stm = (Statement) conexion.createStatement();
-			rs = stm.executeQuery("SELECT * FROM vehiculo");
+			rs = stm.executeQuery("SELECT * FROM vehiculo where es_visible = true");
 
 			while (rs.next()) {
-				tabla.addRow(new Object[] { rs.getString(3), rs.getString(1), rs.getInt(5) });
+				if (cmb.getSelectedItem().toString().contains(rs.getString(2))
+						&& cmb.getSelectedItem().toString().contains(String.valueOf(rs.getInt(7)))) {
+					tabla_Tarifas.addRow(new Object[] { rs.getString(4), rs.getString(2), rs.getInt(7), "$" + rs.getInt(6) });
+				}
+			}
+			rs = stm.executeQuery("SELECT * FROM renta where es_visible = true");
+
+			while (rs.next()) {
+				if (cmb.getSelectedItem().toString().contains(rs.getString(8))
+						&& cmb.getSelectedItem().toString().contains(String.valueOf(rs.getInt(9)))) {
+					tabla_Rentas.addRow(new Object[] { rs.getString(8), rs.getInt(9), rs.getString(2) + " " + rs.getString(3), rs.getDate(6), rs.getDate(7),
+							"$" + rs.getDouble(10)});
+				}
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -199,12 +211,12 @@ public class Conexion {
 			System.out.println("Conexión OK");
 
 			stm = (Statement) conexion.createStatement();
-			rs = stm.executeQuery("SELECT * FROM renta");
+			rs = stm.executeQuery("SELECT * FROM renta where es_visible = true");
 
 			while (rs.next()) {
 				String nom_cliente = rs.getString(2) + " " + rs.getString(3);
-				tabla.addRow(
-						new Object[] { rs.getString(8), nom_cliente, rs.getDate(6), rs.getDate(7), rs.getDouble(9) });
+				tabla.addRow(new Object[] { rs.getString(8), rs.getInt(9), nom_cliente, rs.getDate(6), rs.getDate(7),
+						"$" + rs.getDouble(10) });
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -228,22 +240,25 @@ public class Conexion {
 			rs = stm.executeQuery("SELECT * FROM vehiculo");
 
 			while (rs.next()) {
-				if (rs.getString(1).equals(modelo.getText())) {
+				if (rs.getString(2).equals(modelo.getText()) && rs.getInt(7) == Integer.parseInt(año.getText())
+						&& rs.getBoolean(9) == true) {
 					existente = true;
 				}
 			}
 
 			if (existente == false) {
 				PreparedStatement stm = (PreparedStatement) conexion
-						.prepareStatement("INSERT INTO vehiculo VALUE(?,?,?,?,?,?,?)");
+						.prepareStatement("INSERT INTO vehiculo VALUE(?,?,?,?,?,?,?,?,?)");
 
-				stm.setString(1, modelo.getText().trim());
-				stm.setString(2, nombre.getText().trim());
-				stm.setString(3, cmb.getSelectedItem().toString());
-				stm.setString(4, transmision.getText().trim());
-				stm.setInt(5, Integer.valueOf(tarifa.getText()));
-				stm.setString(6, año.getText());
-				stm.setString(7, cmb_aux.getSelectedItem().toString());
+				stm.setString(1, "0");
+				stm.setString(2, modelo.getText().trim());
+				stm.setString(3, nombre.getText().trim());
+				stm.setString(4, cmb.getSelectedItem().toString());
+				stm.setString(5, transmision.getText().trim());
+				stm.setInt(6, Integer.valueOf(tarifa.getText()));
+				stm.setString(7, año.getText());
+				stm.setString(8, cmb_aux.getSelectedItem().toString());
+				stm.setBoolean(9, true);
 				stm.executeUpdate();
 			}
 		} catch (SQLException | ClassNotFoundException e) {
@@ -258,7 +273,7 @@ public class Conexion {
 		conexion = null;
 		PreparedStatement stm = null;
 		ResultSet rs = null;
-		boolean marca_existente = false;
+		boolean marca_existente = false, marca_antigua = false;
 
 		try {
 			Class.forName(CONTROLADOR);
@@ -270,17 +285,34 @@ public class Conexion {
 			rs = stm.executeQuery();
 
 			if (rs.next()) {
-				marca_existente = true;
+				if (rs.getBoolean(6) == true) {
+					marca_existente = true;
+				} else {
+					marca_antigua = true;
+				}
 			}
 
-			if (!marca_existente) {
+			if (!marca_existente && !marca_antigua) {
 				stm = (PreparedStatement) conexion.prepareStatement(
-						"INSERT INTO marca (nombre, pais_origen, representante, correo_contacto, numero_contacto) VALUES (?, ?, ?, ?, ?)");
+						"INSERT INTO marca (nombre, pais_origen, representante, correo_contacto, numero_contacto, es_visible) VALUES (?, ?, ?, ?, ?, ?)");
 				stm.setString(1, nombre_marca.trim());
 				stm.setString(2, pais_origen_marca.trim());
 				stm.setString(3, representante_marca.trim());
 				stm.setString(4, correo_contacto.trim());
 				stm.setString(5, numero_contacto.trim());
+				stm.setBoolean(6, true);
+				stm.executeUpdate();
+				return true;
+			} else if (!marca_existente && marca_antigua) {
+				stm = (PreparedStatement) conexion.prepareStatement(
+						"UPDATE marca set nombre = ?, pais_origen = ?, representante = ?, correo_contacto = ?, numero_contacto = ?, es_visible = ? WHERE nombre = '"
+								+ nombre_marca + "'");
+				stm.setString(1, nombre_marca.trim());
+				stm.setString(2, pais_origen_marca.trim());
+				stm.setString(3, representante_marca.trim());
+				stm.setString(4, correo_contacto.trim());
+				stm.setString(5, numero_contacto.trim());
+				stm.setBoolean(6, true);
 				stm.executeUpdate();
 				return true;
 			}
@@ -317,19 +349,20 @@ public class Conexion {
 			stm.setString(1, nombre_cliente);
 			rs = stm.executeQuery();
 
-			while (rs.next()) {
+			while (rs.next() && rs.getBoolean(7) == true) {
 				cliente_existente = true;
 				break;
 			}
 
 			if (!cliente_existente) {
 				stm = (PreparedStatement) conexion.prepareStatement(
-						"INSERT INTO cliente (nombre, numero_telefono, apellidos, contrasena, fecha_nacimiento) VALUES (?, ?, ?, ?, ?)");
+						"INSERT INTO cliente (nombre, numero_telefono, apellidos, contrasena, fecha_nacimiento, es_visible) VALUES (?, ?, ?, ?, ?,?)");
 				stm.setString(1, nombre_cliente.trim());
 				stm.setString(3, numero_telefono.trim());
 				stm.setString(2, apellidos_cliente.trim());
 				stm.setString(4, contrasena_cliente.trim());
 				stm.setString(5, fecha_nacimiento.trim());
+				stm.setBoolean(6, true);
 				stm.executeUpdate();
 			}
 		} catch (SQLException | ClassNotFoundException e) {
@@ -356,9 +389,8 @@ public class Conexion {
 		stm = null;
 		rs = null;
 		int tarifa = 0;
-		String modelo = "";
-		String telefono = "";
-		int resultado = 0;
+		String modelo = "", telefono = "";
+		int resultado = 0, año = 0;
 
 		try {
 			Class.forName(CONTROLADOR);
@@ -378,13 +410,19 @@ public class Conexion {
 			// ESTE WHILE SIRVE PARA VALIDAR SI EL MODELO QUE EL USUARIO QUIERE RENTAR YA HA
 			// SIDO RENTADO ANTES Y VALIDAR SI LAS FECHAS DE RENTA NO SE CRUZAN
 			while (rs.next()) {
-				if (cmb.getSelectedItem().toString().contains(rs.getString(8))) {
+				if (cmb.getSelectedItem().toString().contains(rs.getString(8))
+						&& cmb.getSelectedItem().toString().contains(String.valueOf(rs.getInt(9)))) {
 					try {
 						modelo = rs.getString(8);
+						año = rs.getInt(9);
 						fechaInicial_RentasPasadas = sdf.parse(rs.getString(6));
 						fechaFinal_RentasPasadas = sdf.parse(rs.getString(7));
-						if (fechaInicial_NuevaRenta.before(fechaFinal_RentasPasadas)
-								&& fechaInicial_NuevaRenta.after(fechaInicial_RentasPasadas)) {
+						if ((((fechaInicial_NuevaRenta.before(fechaFinal_RentasPasadas)
+								&& (fechaInicial_NuevaRenta.after(fechaInicial_RentasPasadas)
+										|| fechaInicial_NuevaRenta.equals(fechaInicial_RentasPasadas)))
+								|| (fechaInicial_NuevaRenta.before(fechaFinal_RentasPasadas)
+										&& fechaFinal_NuevaRenta.after(fechaInicial_RentasPasadas))))
+								&& rs.getBoolean(11) == true) {
 							resultado = 1;
 						}
 					} catch (ParseException e) {
@@ -405,13 +443,15 @@ public class Conexion {
 				String line_datos_vehiculo = cmb.getSelectedItem().toString();
 				String[] datos_vehiculo = line_datos_vehiculo.split(" ");
 				modelo = datos_vehiculo[2];
+				año = Integer.parseInt(datos_vehiculo[3]);
 			}
 
 			// SE BUSCA LA TARIFA QUE LE PERTENECE AL VEHICULO
 			rs = stm.executeQuery("SELECT * FROM vehiculo");
 			while (rs.next()) {
-				if (cmb.getSelectedItem().toString().contains(rs.getString(1))) {
-					tarifa = rs.getInt(5);
+				if (cmb.getSelectedItem().toString().contains(rs.getString(2))
+						&& cmb.getSelectedItem().toString().contains(String.valueOf(rs.getInt(7)))) {
+					tarifa = rs.getInt(6);
 				}
 			}
 
@@ -435,7 +475,7 @@ public class Conexion {
 				double costo_total = calcular_distancia_dias(fechaInicial_NuevaRenta, fechaFinal_NuevaRenta, tarifa);
 
 				PreparedStatement stm = (PreparedStatement) conexion
-						.prepareStatement("INSERT INTO renta VALUE(?,?,?,?,?,?,?,?,?)");
+						.prepareStatement("INSERT INTO renta VALUE(?,?,?,?,?,?,?,?,?,?,?)");
 
 				stm.setString(1, "0");
 				stm.setString(2, nombre_cliente.getText().trim());
@@ -445,7 +485,9 @@ public class Conexion {
 				stm.setDate(6, fecha_renta_sql);
 				stm.setDate(7, fecha_entrega_sql);
 				stm.setString(8, modelo);
-				stm.setDouble(9, costo_total);
+				stm.setInt(9, año);
+				stm.setDouble(10, costo_total);
+				stm.setBoolean(11, true);
 				stm.executeUpdate();
 			}
 		} catch (SQLException | ClassNotFoundException | ParseException e) {
@@ -470,20 +512,21 @@ public class Conexion {
 			rs = stm.executeQuery("SELECT * FROM categoria");
 
 			while (rs.next()) {
-				if (rs.getString(2).equals(nombre.getText())) {
+				if (rs.getString(2).equals(nombre.getText()) && rs.getBoolean(6) == true) {
 					existente = true;
 				}
 			}
 
 			if (existente == false) {
 				PreparedStatement stm = (PreparedStatement) conexion
-						.prepareStatement("INSERT INTO categoria VALUE(?,?,?,?,?)");
+						.prepareStatement("INSERT INTO categoria VALUE(?,?,?,?,?,?)");
 
 				stm.setString(1, "0");
 				stm.setString(2, nombre.getText().trim());
 				stm.setInt(3, Integer.valueOf(cant_llantas.getText()));
 				stm.setString(4, uso.getText().trim());
 				stm.setInt(5, Integer.valueOf(peso.getText()));
+				stm.setBoolean(6, true);
 				stm.executeUpdate();
 			}
 		} catch (SQLException | ClassNotFoundException e) {
@@ -493,143 +536,12 @@ public class Conexion {
 		return existente;
 	}
 
-	public void llenar_CMB_Clientes(JComboBox cmb_cliente) {
-		conexion = null;
-		stm = null;
-		rs = null;
-
-		try {
-			Class.forName(CONTROLADOR);
-			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
-			System.out.println("Conexión OK");
-
-			stm = (Statement) conexion.createStatement();
-			rs = stm.executeQuery("SELECT * FROM cliente");
-
-			while (rs.next()) {
-				cmb_cliente.addItem(rs.getString(2) + " " + rs.getString(3));
-			}
-		} catch (SQLException | ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public void llenar_CMB_Vehiculos(JComboBox cmb) {
-		conexion = null;
-		stm = null;
-		rs = null;
-
-		try {
-			Class.forName(CONTROLADOR);
-			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
-			System.out.println("Conexión OK");
-
-			stm = (Statement) conexion.createStatement();
-			rs = stm.executeQuery("SELECT * FROM vehiculo");
-
-			while (rs.next()) {
-				cmb.addItem(rs.getString(3) + " " + rs.getString(2) + " " + rs.getString(1));
-			}
-		} catch (SQLException | ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public void llenar_CMB_Categorias(JComboBox cmb) {
-		conexion = null;
-		stm = null;
-		rs = null;
-
-		try {
-			Class.forName(CONTROLADOR);
-			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
-			System.out.println("Conexión OK");
-
-			stm = (Statement) conexion.createStatement();
-			rs = stm.executeQuery("SELECT * FROM categoria");
-
-			while (rs.next()) {
-				cmb.addItem(rs.getString(2));
-			}
-		} catch (SQLException | ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public void llenar_CMB_Marcas(JComboBox cmb_marca) {
-		conexion = null;
-		stm = null;
-		rs = null;
-
-		try {
-			Class.forName(CONTROLADOR);
-			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
-			System.out.println("Conexión OK");
-
-			stm = (Statement) conexion.createStatement();
-			rs = stm.executeQuery("SELECT * FROM marca");
-
-			while (rs.next()) {
-				cmb_marca.addItem(rs.getString(1));
-			}
-		} catch (SQLException | ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public void llenar_CMB_Rentas(JComboBox cmb) {
-		conexion = null;
-		stm = null;
-		rs = null;
-
-		try {
-			Class.forName(CONTROLADOR);
-			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
-			System.out.println("Conexión OK");
-
-			stm = (Statement) conexion.createStatement();
-			rs = stm.executeQuery("SELECT * FROM renta");
-
-			while (rs.next()) {
-				cmb.addItem(rs.getString(2) + " " + rs.getString(3) + " - " + rs.getString(8) + " - " + rs.getString(6)
-						+ " a " + rs.getString(7));
-			}
-		} catch (SQLException | ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	/*
-	 * public void llenar_Campos_Categoria_Segun_ComboBox(JTextField nombre,
-	 * JTextField cant_llantas, JTextField uso, JTextField peso, JComboBox cmb) {
-	 * conexion = null; stm = null; rs = null; boolean existe = false;
-	 * 
-	 * try { Class.forName(CONTROLADOR); conexion = DriverManager.getConnection(URL,
-	 * USUARIO, CLAVE); System.out.println("Conexión OK");
-	 * 
-	 * stm = (Statement) conexion.createStatement(); rs =
-	 * stm.executeQuery("SELECT * FROM categoria");
-	 * 
-	 * while (rs.next()) { if
-	 * (rs.getString(2).equals(cmb.getSelectedItem().toString())) {
-	 * nombre.setText(rs.getString(2));
-	 * cant_llantas.setText(String.valueOf(rs.getInt(3)));
-	 * uso.setText(rs.getString(4)); peso.setText(String.valueOf(rs.getInt(5))); } }
-	 * } catch (SQLException | ClassNotFoundException e) { // TODO Auto-generated
-	 * catch block e.printStackTrace(); } }
-	 */
-
 	public boolean editar_Vehiculo(JTextField modelo, JTextField nombre, JTextField marca, JTextField transmision,
 			JTextField tarifa, JTextField año, JComboBox cmb, JComboBox cmb_aux) {
 		conexion = null;
 		stm = null;
 		rs = null;
-		String modelo_id = "";
+		int vehiculo_id = 0;
 		boolean existe = false;
 
 		try {
@@ -641,8 +553,9 @@ public class Conexion {
 			rs = stm.executeQuery("SELECT * FROM vehiculo");
 
 			while (rs.next()) {
-				if (cmb.getSelectedItem().toString().contains(rs.getString(1))) {
-					modelo_id = rs.getString(1);
+				if (cmb.getSelectedItem().toString().contains(rs.getString(2))
+						&& cmb.getSelectedItem().toString().contains(String.valueOf(rs.getInt(7)))) {
+					vehiculo_id = rs.getInt(1);
 				}
 			}
 
@@ -655,14 +568,15 @@ public class Conexion {
 			}
 			if (existe) {
 				PreparedStatement stm = (PreparedStatement) conexion.prepareStatement(
-						"UPDATE vehiculo set nombre = ?, marca = ?, transmision = ?, tarifa = ?, año = ?, categoria = ? where modelo = '"
-								+ modelo_id + "'");
+						"UPDATE vehiculo set nombre = ?, marca = ?, modelo = ?, transmision = ?, tarifa = ?, año = ?, categoria = ? where id_vehiculo = '"
+								+ vehiculo_id + "'");
 				stm.setString(1, nombre.getText().trim());
 				stm.setString(2, marca.getText().trim());
-				stm.setString(3, transmision.getText().trim());
-				stm.setInt(4, Integer.valueOf(tarifa.getText()));
-				stm.setInt(5, Integer.valueOf(año.getText()));
-				stm.setString(6, cmb_aux.getSelectedItem().toString());
+				stm.setString(3, modelo.getText().trim());
+				stm.setString(4, transmision.getText().trim());
+				stm.setInt(5, Integer.valueOf(tarifa.getText()));
+				stm.setInt(6, Integer.valueOf(año.getText()));
+				stm.setString(7, cmb_aux.getSelectedItem().toString());
 				stm.executeUpdate();
 			}
 		} catch (SQLException | ClassNotFoundException e) {
@@ -672,7 +586,6 @@ public class Conexion {
 
 		return existe;
 	}
-
 
 	public boolean editar_Marca(JTextField nombreMarca, JTextField paisOrigen, JTextField representante,
 			JTextField correo, JTextField numero, JComboBox cmb_marca) {
@@ -768,7 +681,7 @@ public class Conexion {
 
 		return existe;
 	}
-
+	
 	public boolean editar_Categoria(JTextField nombre, JTextField cant_llantas, JTextField uso, JTextField peso,
 			JComboBox cmb) {
 		conexion = null;
@@ -868,19 +781,22 @@ public class Conexion {
 				// SIENDO EVALUADA EN EL SELECT Y DE ESTA MANERA SE OBTIENE EL ID
 				if (cmb.getSelectedItem().toString().contains(rs.getString(8))
 						&& cmb.getSelectedItem().toString().contains(rs.getString(6))
-						&& cmb.getSelectedItem().toString().contains(rs.getString(7))) {
+						&& cmb.getSelectedItem().toString().contains(rs.getString(7))
+						&& cmb.getSelectedItem().toString().contains(String.valueOf(rs.getInt(9)))) {
 					renta_id = rs.getInt(1);
 				}
 			}
 
 			rs = stm.executeQuery("SELECT * FROM renta");
 			while (rs.next() && resultado == 0) {
-				if (cmb.getSelectedItem().toString().contains(rs.getString(8))) {
+				if (cmb.getSelectedItem().toString().contains(rs.getString(8))
+						&& cmb.getSelectedItem().toString().contains(String.valueOf(rs.getInt(9)))) {
 					try {
 						fechaInicial_RentasPasadas = sdf.parse(rs.getString(6));
 						fechaFinal_RentasPasadas = sdf.parse(rs.getString(7));
 						if (((fechaInicial_NuevaRenta.before(fechaFinal_RentasPasadas)
-								&& fechaInicial_NuevaRenta.after(fechaInicial_RentasPasadas))
+								&& (fechaInicial_NuevaRenta.after(fechaInicial_RentasPasadas)
+										|| fechaInicial_NuevaRenta.equals(fechaInicial_RentasPasadas)))
 								|| (fechaInicial_NuevaRenta.before(fechaFinal_RentasPasadas)
 										&& fechaFinal_NuevaRenta.after(fechaInicial_RentasPasadas)))
 								&& renta_id != rs.getInt(1)) {
@@ -902,8 +818,9 @@ public class Conexion {
 			// SE BUSCA LA TARIFA QUE LE PERTENECE AL VEHICULO
 			rs = stm.executeQuery("SELECT * FROM vehiculo");
 			while (rs.next()) {
-				if (cmb.getSelectedItem().toString().contains(rs.getString(1))) {
-					tarifa = rs.getInt(5);
+				if (cmb.getSelectedItem().toString().contains(rs.getString(2))
+						&& cmb.getSelectedItem().toString().contains(String.valueOf(rs.getInt(7)))) {
+					tarifa = rs.getInt(6);
 				}
 			}
 
@@ -933,7 +850,7 @@ public class Conexion {
 		conexion = null;
 		stm = null;
 		rs = null;
-		String modelo_id = "";
+		int vehiculo_id = 0;
 
 		try {
 			Class.forName(CONTROLADOR);
@@ -944,14 +861,24 @@ public class Conexion {
 			rs = stm.executeQuery("SELECT * FROM vehiculo");
 
 			while (rs.next()) {
-				if (cmb.getSelectedItem().toString().contains(rs.getString(1))) {
-					modelo_id = rs.getString(1);
+				if (cmb.getSelectedItem().toString().contains(rs.getString(2))
+						&& cmb.getSelectedItem().toString().contains(String.valueOf(rs.getInt(7)))) {
+					vehiculo_id = rs.getInt(1);
 				}
 			}
 
+			// ELIMINADO FISICO
+			/*
+			 * PreparedStatement stm = (PreparedStatement) conexion
+			 * .prepareStatement("delete from vehiculo where id_vehiculo = '" + vehiculo_id
+			 * + "'");
+			 * 
+			 * stm.executeUpdate();
+			 */
+			// ELIMINADO LOGICO
 			PreparedStatement stm = (PreparedStatement) conexion
-					.prepareStatement("delete from vehiculo where modelo = '" + modelo_id + "'");
-
+					.prepareStatement("UPDATE vehiculo set es_visible = ? where id_vehiculo = '" + vehiculo_id + "'");
+			stm.setBoolean(1, false);
 			stm.executeUpdate();
 
 		} catch (SQLException | ClassNotFoundException e) {
@@ -972,10 +899,26 @@ public class Conexion {
 			String selectedMarca = cmb_marca.getSelectedItem() != null ? cmb_marca.getSelectedItem().toString() : null;
 			System.out.println("Selected marca: " + selectedMarca);
 
+			// ELIMINADO FISICO
+			/*
+			 * if (selectedMarca != null) { String query =
+			 * "DELETE FROM marca WHERE nombre = ?"; stm = (PreparedStatement)
+			 * conexion.prepareStatement(query); stm.setString(1, selectedMarca); int
+			 * rowCount = stm.executeUpdate();
+			 * 
+			 * if (rowCount > 0) { JOptionPane.showMessageDialog(null,
+			 * "Marca eliminada correctamente"); } else {
+			 * JOptionPane.showMessageDialog(null,
+			 * "Error. No se encontró la marca seleccionada en la base de datos."); } } else
+			 * { JOptionPane.showMessageDialog(null,
+			 * "Error. No se ha seleccionado ninguna marca."); }
+			 */
+			// ELIMINADO LOGICO
 			if (selectedMarca != null) {
-				String query = "DELETE FROM marca WHERE nombre = ?";
+				String query = "UPDATE marca set es_visible = ? where nombre = ?";
 				stm = (PreparedStatement) conexion.prepareStatement(query);
-				stm.setString(1, selectedMarca);
+				stm.setBoolean(1, false);
+				stm.setString(2, selectedMarca);
 				int rowCount = stm.executeUpdate();
 
 				if (rowCount > 0) {
@@ -1021,9 +964,16 @@ public class Conexion {
 				}
 			}
 
-			PreparedStatement stm = (PreparedStatement) conexion
-					.prepareStatement("delete from categoria where id = " + id);
+			// ELIMINADO FISICO
+			/*
+			 * PreparedStatement stm = (PreparedStatement) conexion
+			 * .prepareStatement("delete from categoria where id = " + id);
+			 */
 
+			// ELIMINADO LOGICO
+			PreparedStatement stm = (PreparedStatement) conexion
+					.prepareStatement("UPDATE categoria set es_visible = ? where id = " + id);
+			stm.setBoolean(1, false);
 			stm.executeUpdate();
 
 		} catch (SQLException | ClassNotFoundException e) {
@@ -1057,9 +1007,17 @@ public class Conexion {
 			if (cliente_id != 0) {
 				// El cliente fue encontrado en la base de datos, se puede realizar la
 				// eliminación
+				// ELIMINADO FISICO
+				/*
+				 * PreparedStatement stm = (PreparedStatement) conexion
+				 * .prepareStatement("DELETE FROM cliente WHERE cliente_id = ?"); stm.setInt(1,
+				 * cliente_id); stm.executeUpdate();
+				 */
+				// ELIMINADO LOGICO
 				PreparedStatement stm = (PreparedStatement) conexion
-						.prepareStatement("DELETE FROM cliente WHERE cliente_id = ?");
-				stm.setInt(1, cliente_id);
+						.prepareStatement("UPDATE cliente set es_visible = ? WHERE cliente_id = ?");
+				stm.setBoolean(1, false);
+				stm.setInt(2, cliente_id);
 				stm.executeUpdate();
 			} else {
 				JOptionPane.showMessageDialog(null,
@@ -1094,9 +1052,16 @@ public class Conexion {
 				}
 			}
 
+			// ELIMINADO FISICO
+			/*
+			 * PreparedStatement stm = (PreparedStatement) conexion
+			 * .prepareStatement("delete from renta where renta_id = " + renta_id);
+			 * stm.executeUpdate();
+			 */
+			// ELIMINADO LOGICO
 			PreparedStatement stm = (PreparedStatement) conexion
-					.prepareStatement("delete from renta where renta_id = " + renta_id);
-
+					.prepareStatement("UPDATE renta set es_visible = ? where renta_id = " + renta_id);
+			stm.setBoolean(1, false);
 			stm.executeUpdate();
 
 		} catch (SQLException | ClassNotFoundException e) {
@@ -1106,6 +1071,7 @@ public class Conexion {
 	}
 
 	public double calcular_distancia_dias(Date fecha_Inicial, Date fecha_Final, int tarifa) {
+
 		double costo_total;
 		long diferencia_dias_milisegundos = fecha_Final.getTime() - fecha_Inicial.getTime();
 		TimeUnit convertidor = TimeUnit.DAYS;
@@ -1117,5 +1083,145 @@ public class Conexion {
 			costo_total = dias_transcurridos_int * tarifa;
 		}
 		return costo_total;
+	}
+
+	public void llenar_CMB_Clientes(JComboBox cmb_cliente) {
+		conexion = null;
+		stm = null;
+		rs = null;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM cliente where es_visible = true");
+
+			while (rs.next()) {
+				cmb_cliente.addItem(rs.getString(2) + " " + rs.getString(3));
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void llenar_CMB_Vehiculos(JComboBox cmb) {
+		conexion = null;
+		stm = null;
+		rs = null;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM vehiculo where es_visible = true");
+
+			while (rs.next()) {
+				cmb.addItem(rs.getString(4) + " " + rs.getString(3) + " " + rs.getString(2) + " " + rs.getInt(7));
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void llenar_CMB_Categorias(JComboBox cmb) {
+		conexion = null;
+		stm = null;
+		rs = null;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM categoria where es_visible = true");
+
+			while (rs.next()) {
+				cmb.addItem(rs.getString(2));
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void llenar_CMB_Marcas(JComboBox cmb_marca) {
+		conexion = null;
+		stm = null;
+		rs = null;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM marca where es_visible = true");
+
+			while (rs.next()) {
+				cmb_marca.addItem(rs.getString(1));
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void llenar_CMB_Rentas(JComboBox cmb) {
+		conexion = null;
+		stm = null;
+		rs = null;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM renta where es_visible = true");
+
+			while (rs.next()) {
+				cmb.addItem(rs.getString(2) + " " + rs.getString(3) + " - " + rs.getString(8) + " " + rs.getInt(9)
+						+ " - " + rs.getString(6) + " a " + rs.getString(7));
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void llenar_TextField_Categorias(JComboBox cmb, JTextField nombre, JTextField cant_llantas, JTextField uso,
+			JTextField peso) {
+		conexion = null;
+		stm = null;
+		rs = null;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("select * from categoria");
+
+			while (rs.next()) {
+				if (cmb.getSelectedItem().toString().equals(rs.getString(2))) {
+					nombre.setText(rs.getString(2));
+					cant_llantas.setText(String.valueOf(rs.getInt(3)));
+					uso.setText(rs.getString(4));
+					peso.setText(String.valueOf(rs.getInt(5)));
+
+				}
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

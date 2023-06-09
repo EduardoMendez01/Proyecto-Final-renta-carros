@@ -140,12 +140,19 @@ public class Ventana extends JFrame {
 		login.setBackground(Color.decode("#2F0909"));
 		login.setLayout(null);
 
-		JLabel ingresar_Nombre = new JLabel("Nombre del cliente: ", JLabel.CENTER);
-		ingresar_Nombre.setSize(200, 30);
-		ingresar_Nombre.setLocation(100, 120);
+		JLabel ingresar_Nombre = new JLabel("Nombre completo de el", JLabel.CENTER);
+		ingresar_Nombre.setSize(300, 30);
+		ingresar_Nombre.setLocation(65, 90);
 		ingresar_Nombre.setFont(new Font("Arial", Font.PLAIN, 23));
 		ingresar_Nombre.setForeground(Color.white);
 		login.add(ingresar_Nombre);
+		
+		JLabel ingresar_Nombre_2 = new JLabel("cliente:", JLabel.CENTER);
+		ingresar_Nombre_2.setSize(200, 30);
+		ingresar_Nombre_2.setLocation(35, 120);
+		ingresar_Nombre_2.setFont(new Font("Arial", Font.PLAIN, 23));
+		ingresar_Nombre_2.setForeground(Color.white);
+		login.add(ingresar_Nombre_2);
 
 		JTextField in_ingresar_Nombre = new JTextField();
 		in_ingresar_Nombre.setSize(300, 30);
@@ -310,6 +317,8 @@ public class Ventana extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+				cmb.removeAllItems();
+				conexion.llenar_CMB_Vehiculos(cmb);
 				actual = "vehiculos_consultar";
 				route();
 			}
@@ -385,40 +394,58 @@ public class Ventana extends JFrame {
 		icono_consultar.setIcon(new ImageIcon(foto_consultar.getImage().getScaledInstance(icono_consultar.getWidth(),
 				icono_consultar.getHeight(), Image.SCALE_SMOOTH)));
 		vehiculos_Consultar.add(icono_consultar);
+		
+		cmb.setSize(400, 30);
+		cmb.setLocation(350, 125);
+		vehiculos_Consultar.add(cmb);
 
+		JLabel vehiculo = new JLabel("Selecciona el vehículo que deseas consultar");
+		vehiculo.setSize(300, 30);
+		vehiculo.setLocation(435, 150);
+		vehiculo.setFont(new Font("Arial", Font.PLAIN, 12));
+		vehiculos_Consultar.add(vehiculo);
+	
 		JLabel titulo_tabla_rentas = new JLabel("Historial de rentas");
 		titulo_tabla_rentas.setSize(130, 30);
-		titulo_tabla_rentas.setLocation(495, 110);
+		titulo_tabla_rentas.setLocation(495, 170);
 		titulo_tabla_rentas.setFont(new Font("Arial", Font.BOLD, 12));
 		vehiculos_Consultar.add(titulo_tabla_rentas);
 
-		String nombresColumna[] = { "Modelo", "Cliente", "F. Inicial", "F.Final", "Costo total" };
+		String nombresColumna[] = { "Modelo", "Año", "Cliente", "F. Inicial", "F.Final", "Costo total" };
 		JTable tabla = new JTable();
 		DefaultTableModel tablaModel = new DefaultTableModel();
 		tablaModel.setColumnIdentifiers(nombresColumna);
 		tabla.setModel(tablaModel);
-		conexion.consultar_Rentas(tablaModel);
 		JScrollPane sp = new JScrollPane(tabla);
 		sp.setSize(530, 100);
-		sp.setLocation(285, 140);
+		sp.setLocation(285, 200);
 		vehiculos_Consultar.add(sp);
 
 		JLabel titulo_tabla_tarifas = new JLabel("Tarifas");
 		titulo_tabla_tarifas.setSize(130, 30);
-		titulo_tabla_tarifas.setLocation(530, 260);
+		titulo_tabla_tarifas.setLocation(530, 320);
 		titulo_tabla_tarifas.setFont(new Font("Arial", Font.BOLD, 12));
 		vehiculos_Consultar.add(titulo_tabla_tarifas);
 
-		String nombresColumna2[] = { "Marca", "Modelo", "Tarifa" };
+		String nombresColumna2[] = { "Marca", "Modelo", "Año", "Tarifa" };
 		JTable tabla2 = new JTable();
 		DefaultTableModel tablaModel2 = new DefaultTableModel();
 		tablaModel2.setColumnIdentifiers(nombresColumna2);
 		tabla2.setModel(tablaModel2);
-		conexion.consultar_Vehiculos(tablaModel2);
 		JScrollPane sp2 = new JScrollPane(tabla2);
 		sp2.setSize(530, 100);
-		sp2.setLocation(285, 290);
+		sp2.setLocation(285, 350);
 		vehiculos_Consultar.add(sp2);
+		
+		cmb.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				tablaModel.setRowCount(0);
+				tablaModel2.setRowCount(0);
+				conexion.consultar_Vehiculos(tablaModel, tablaModel2, cmb);
+			}
+		});
 
 		JButton btn_Volver = new JButton("Volver");
 		btn_Volver.setSize(250, 30);
@@ -699,7 +726,6 @@ public class Ventana extends JFrame {
 		in_modelo_vehiculo.setSize(280, 30);
 		in_modelo_vehiculo.setLocation(250, 300);
 		in_modelo_vehiculo.setFont(new Font("Arial", Font.PLAIN, 16));
-		in_modelo_vehiculo.setEditable(false);
 		vehiculos_editar.add(in_modelo_vehiculo);
 
 		JLabel transmision_vehiculo = new JLabel("Ingresa la transmisión de el vehículo");
@@ -1242,13 +1268,13 @@ public class Ventana extends JFrame {
 		confirmar_contrasena.setFont(new Font("Arial", Font.BOLD, 16));
 		crear_clientes.add(confirmar_contrasena);
 
-		JTextField in_confirmar_contra = new JTextField();
+		JPasswordField in_confirmar_contra = new JPasswordField();
 		in_confirmar_contra.setSize(280, 30);
 		in_confirmar_contra.setLocation(585, 390);
 		in_confirmar_contra.setFont(new Font("Arial", Font.PLAIN, 16));
 		crear_clientes.add(in_confirmar_contra);
 
-		JTextField in_contrasena_cliente = new JTextField();
+		JPasswordField in_contrasena_cliente = new JPasswordField();
 		in_contrasena_cliente.setSize(280, 30);
 		in_contrasena_cliente.setLocation(250, 390);
 		in_contrasena_cliente.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -1407,7 +1433,7 @@ public class Ventana extends JFrame {
 		confirmar_contrasena.setFont(new Font("Arial", Font.BOLD, 16));
 		editar_clientes.add(confirmar_contrasena);
 
-		JTextField in_confirmar_contra = new JTextField();
+		JPasswordField in_confirmar_contra = new JPasswordField();
 		in_confirmar_contra.setSize(280, 30);
 		in_confirmar_contra.setLocation(585, 390);
 		in_confirmar_contra.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -1419,7 +1445,7 @@ public class Ventana extends JFrame {
 		contrasena_cliente.setFont(new Font("Arial", Font.BOLD, 16));
 		editar_clientes.add(contrasena_cliente);
 
-		JTextField in_contrasena_cliente = new JTextField();
+		JPasswordField in_contrasena_cliente = new JPasswordField();
 		in_contrasena_cliente.setSize(280, 30);
 		in_contrasena_cliente.setLocation(250, 390);
 		in_contrasena_cliente.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -1566,6 +1592,7 @@ public class Ventana extends JFrame {
 		in_nombre_c.setSize(280, 30);
 		in_nombre_c.setLocation(250, 210);
 		in_nombre_c.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_nombre_c.setEditable(false);
 		eliminar_cliente.add(in_nombre_c);
 
 		JLabel apellidos_c = new JLabel("Apellidos del cliente");
@@ -1578,6 +1605,7 @@ public class Ventana extends JFrame {
 		in_apellidos_c.setSize(280, 30);
 		in_apellidos_c.setLocation(250, 300);
 		in_apellidos_c.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_apellidos_c.setEditable(false);
 		eliminar_cliente.add(in_apellidos_c);
 
 		JLabel fecha_nac = new JLabel("Fecha de nacimiento");
@@ -1590,6 +1618,7 @@ public class Ventana extends JFrame {
 		in_fecha_nac.setSize(280, 30);
 		in_fecha_nac.setLocation(585, 210);
 		in_fecha_nac.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_fecha_nac.setEditable(false);
 		eliminar_cliente.add(in_fecha_nac);
 
 		JLabel numero_tel = new JLabel("Numero de telefono");
@@ -1602,6 +1631,7 @@ public class Ventana extends JFrame {
 		in_numero_tel.setSize(280, 30);
 		in_numero_tel.setLocation(250, 390);
 		in_numero_tel.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_numero_tel.setEditable(false);
 		eliminar_cliente.add(in_numero_tel);
 
 		JLabel Contraseña = new JLabel("Contraseña");
@@ -1614,6 +1644,7 @@ public class Ventana extends JFrame {
 		in_Contraseña.setSize(280, 30);
 		in_Contraseña.setLocation(585, 300);
 		in_Contraseña.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_Contraseña.setEditable(false);
 		eliminar_cliente.add(in_Contraseña);
 
 		JButton btn_Volver = new JButton("Volver");
@@ -1826,7 +1857,7 @@ public class Ventana extends JFrame {
 		titulo_tabla_rentas.setFont(new Font("Arial", Font.BOLD, 12));
 		rentas_Consultar.add(titulo_tabla_rentas);
 
-		String nombresColumna[] = { "Modelo", "Cliente", "F. Inicial", "F.Final", "Costo total" };
+		String nombresColumna[] = { "Modelo", "Año", "Cliente", "F. Inicial", "F.Final", "Costo total" };
 		JTable tabla = new JTable();
 		DefaultTableModel tablaModel = new DefaultTableModel();
 		tablaModel.setColumnIdentifiers(nombresColumna);
@@ -2484,7 +2515,7 @@ public class Ventana extends JFrame {
 				icono_consultar.getHeight(), Image.SCALE_SMOOTH)));
 		categorias_consultar.add(icono_consultar);
 
-		String nombresColumna[] = { "Nombre de categoria", "Modelo de vehículo", "Cantidad de llantas", "Uso",
+		String nombresColumna[] = { "Nombre de categoria", "Modelo de vehículo", "Año de vehiculo", "Cantidad de llantas", "Uso",
 				"Peso promedio (Kg)" };
 		JTable tabla = new JTable();
 		DefaultTableModel tablaModel = new DefaultTableModel();
@@ -2493,7 +2524,7 @@ public class Ventana extends JFrame {
 		conexion.consultar_Categorias(tablaModel);
 		JScrollPane sp = new JScrollPane(tabla);
 		sp.setSize(610, 300);
-		sp.setLocation(245, 140);
+		sp.setLocation(250, 140);
 		categorias_consultar.add(sp);
 
 		JButton btn_Volver = new JButton("Volver");
@@ -2700,6 +2731,7 @@ public class Ventana extends JFrame {
 				icono_editar.getHeight(), Image.SCALE_SMOOTH)));
 		categorias_Editar.add(icono_editar);
 
+		
 		cmb.setSize(440, 30);
 		cmb.setLocation(325, 120);
 		categorias_Editar.add(cmb);
@@ -2786,15 +2818,17 @@ public class Ventana extends JFrame {
 		btn_Editar.setForeground(Color.white);
 		categorias_Editar.add(btn_Editar);
 
+		
 		/*
-		 * cmb.addActionListener(new ActionListener() {
-		 * 
-		 * @Override public void actionPerformed(ActionEvent e) { // TODO Auto-generated
-		 * method stub
-		 * conexion.llenar_Campos_Categoria_Segun_ComboBox(in_nombre_categoria,
-		 * in_cantidad_llantas_categoria, in_uso_categoria, in_peso_categoria, cmb); }
-		 * });
-		 */
+		cmb.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				System.out.println("Hola");
+				conexion.llenar_TextField_Categorias(cmb, in_nombre_categoria, in_cantidad_llantas_categoria, in_uso_categoria, in_peso_categoria);
+			}
+		});*/
 
 		btn_Volver.addActionListener(new ActionListener() {
 			@Override
@@ -2963,6 +2997,18 @@ public class Ventana extends JFrame {
 		btn_Eliminar.setForeground(Color.white);
 		categorias_Eliminar.add(btn_Eliminar);
 
+		/*
+		cmb.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if(cmb.getSelectedItem() != null) {
+					conexion.llenar_TextField_Categorias(cmb, in_nombre_categoria, in_cantidad_llantas_categoria, in_uso_categoria, in_peso_categoria);
+				}
+			}
+		});*/
+		
 		btn_Volver.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
