@@ -30,7 +30,7 @@ public class Conexion {
 	private static final String USUARIO = "root";
 	// EN ESTA LINEA SE PONE LA CONTRASEÑA QUE CONFIGURASTE PARA TU USUARIO A LA
 	// HORA DE INSTALAR WORKBENCH
-	private static final String CLAVE = "Bahialucila219";
+	private static final String CLAVE = "Elcasconegro1";
 
 	Date fechaInicial_RentasPasadas;
 	Date fechaInicial_NuevaRenta;
@@ -39,6 +39,8 @@ public class Conexion {
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	java.sql.Date fecha_renta_sql;
 	java.sql.Date fecha_entrega_sql;
+	Date fecha_Nacimiento;
+	java.sql.Date fecha_Nacimiento_sql;
 
 	public Connection conectar() {
 		Connection conexion = null;
@@ -110,7 +112,7 @@ public class Conexion {
 
 			while (rs.next()) {
 				tabla.addRow(
-						new Object[] { rs.getString(1), rs.getString(2), rs.getInt(3), rs.getString(4), rs.getInt(5)});
+						new Object[] { rs.getString(1), rs.getString(2), rs.getInt(3), rs.getString(4), rs.getInt(5) });
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -251,6 +253,103 @@ public class Conexion {
 		return existente;
 	}
 
+	public boolean añadir_marca(String nombre_marca, String pais_origen_marca, String representante_marca,
+			String correo_contacto, String numero_contacto, JComboBox cmb) {
+		conexion = null;
+		PreparedStatement stm = null;
+		ResultSet rs = null;
+		boolean marca_existente = false;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (PreparedStatement) conexion.prepareStatement("SELECT * FROM marca WHERE nombre = ?");
+			stm.setString(1, nombre_marca.trim());
+			rs = stm.executeQuery();
+
+			if (rs.next()) {
+				marca_existente = true;
+			}
+
+			if (!marca_existente) {
+				stm = (PreparedStatement) conexion.prepareStatement(
+						"INSERT INTO marca (nombre, pais_origen, representante, correo_contacto, numero_contacto) VALUES (?, ?, ?, ?, ?)");
+				stm.setString(1, nombre_marca.trim());
+				stm.setString(2, pais_origen_marca.trim());
+				stm.setString(3, representante_marca.trim());
+				stm.setString(4, correo_contacto.trim());
+				stm.setString(5, numero_contacto.trim());
+				stm.executeUpdate();
+				return true;
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (stm != null) {
+					stm.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+
+	public boolean añadir_cliente(String nombre_cliente, String numero_telefono, String apellidos_cliente,
+			String contrasena_cliente, String fecha_nacimiento) {
+		conexion = null;
+		PreparedStatement stm = null;
+		ResultSet rs = null;
+		Boolean cliente_existente = false;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (PreparedStatement) conexion.prepareStatement("SELECT * FROM cliente WHERE nombre = ?");
+			stm.setString(1, nombre_cliente);
+			rs = stm.executeQuery();
+
+			while (rs.next()) {
+				cliente_existente = true;
+				break;
+			}
+
+			if (!cliente_existente) {
+				stm = (PreparedStatement) conexion.prepareStatement(
+						"INSERT INTO cliente (nombre, numero_telefono, apellidos, contrasena, fecha_nacimiento) VALUES (?, ?, ?, ?, ?)");
+				stm.setString(1, nombre_cliente.trim());
+				stm.setString(3, numero_telefono.trim());
+				stm.setString(2, apellidos_cliente.trim());
+				stm.setString(4, contrasena_cliente.trim());
+				stm.setString(5, fecha_nacimiento.trim());
+				stm.executeUpdate();
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (stm != null) {
+					stm.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return cliente_existente;
+	}
+
 	public int añadir_Renta(JTextField nombre_cliente, JTextField apellidos_cliente, JTextField fecha_renta,
 			JTextField fecha_entrega, JComboBox cmb) {
 		conexion = null;
@@ -284,7 +383,8 @@ public class Conexion {
 						modelo = rs.getString(8);
 						fechaInicial_RentasPasadas = sdf.parse(rs.getString(6));
 						fechaFinal_RentasPasadas = sdf.parse(rs.getString(7));
-						if (fechaInicial_NuevaRenta.before(fechaFinal_RentasPasadas) && fechaInicial_NuevaRenta.after(fechaInicial_RentasPasadas)) {
+						if (fechaInicial_NuevaRenta.before(fechaFinal_RentasPasadas)
+								&& fechaInicial_NuevaRenta.after(fechaInicial_RentasPasadas)) {
 							resultado = 1;
 						}
 					} catch (ParseException e) {
@@ -294,8 +394,9 @@ public class Conexion {
 				}
 			}
 
-			//SE VALIDA QUE LA FECHA DE ENTREGA DE LA RENTA NO SEA ANTERIOR A LA FECHA INICIAL
-			if(fechaInicial_NuevaRenta.after(fechaFinal_NuevaRenta)) {
+			// SE VALIDA QUE LA FECHA DE ENTREGA DE LA RENTA NO SEA ANTERIOR A LA FECHA
+			// INICIAL
+			if (fechaInicial_NuevaRenta.after(fechaFinal_NuevaRenta)) {
 				resultado = 3;
 			}
 			// ESTE IF SIRVE PARA EN CASO DE QUE NO SE HAYA ENTRADO AL WHILE ANTERIOR PODER
@@ -392,6 +493,28 @@ public class Conexion {
 		return existente;
 	}
 
+	public void llenar_CMB_Clientes(JComboBox cmb_cliente) {
+		conexion = null;
+		stm = null;
+		rs = null;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM cliente");
+
+			while (rs.next()) {
+				cmb_cliente.addItem(rs.getString(2) + " " + rs.getString(3));
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	public void llenar_CMB_Vehiculos(JComboBox cmb) {
 		conexion = null;
 		stm = null;
@@ -436,7 +559,7 @@ public class Conexion {
 		}
 	}
 
-	public void llenar_CMB_Marcas(JComboBox cmb) {
+	public void llenar_CMB_Marcas(JComboBox cmb_marca) {
 		conexion = null;
 		stm = null;
 		rs = null;
@@ -450,7 +573,7 @@ public class Conexion {
 			rs = stm.executeQuery("SELECT * FROM marca");
 
 			while (rs.next()) {
-				cmb.addItem(rs.getString(1));
+				cmb_marca.addItem(rs.getString(1));
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -544,6 +667,102 @@ public class Conexion {
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return existe;
+	}
+
+
+	public boolean editar_Marca(JTextField nombreMarca, JTextField paisOrigen, JTextField representante,
+			JTextField correo, JTextField numero, JComboBox cmb_marca) {
+		conexion = null;
+		stm = null;
+		rs = null;
+		boolean existe = false;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM marca");
+
+			while (rs.next()) {
+				if (!nombreMarca.getText().equals(cmb_marca.getSelectedItem().toString())) {
+					if (nombreMarca.getText().equals(rs.getString(1))) {
+						existe = true;
+					}
+				}
+			}
+
+			if (!existe) {
+				PreparedStatement stm = (PreparedStatement) conexion.prepareStatement(
+						"UPDATE marca set nombre = ?, representante = ?, pais_origen = ?, numero_contacto = ?, correo_contacto = ? where nombre = '"
+								+ cmb_marca.getSelectedItem().toString() + "'");
+				stm.setString(1, nombreMarca.getText().trim());
+				stm.setString(2, representante.getText().trim());
+				stm.setString(3, paisOrigen.getText().trim());
+				stm.setString(4, numero.getText().trim());
+				stm.setString(5, correo.getText().trim());
+				stm.executeUpdate();
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return existe;
+	}
+
+	public boolean editar_Cliente(JTextField in_apellidos_cliente, JTextField in_nombre_cliente,
+			JTextField in_contrasena_cliente, JTextField in_fecha_nacimiento, JTextField in_numero_telefono,
+			JComboBox cmb_cliente) {
+		conexion = null;
+		stm = null;
+		rs = null;
+
+		int cliente_id = 0;
+		boolean existe = false;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM cliente");
+
+			while (rs.next()) {
+				if (cmb_cliente.getSelectedItem().toString().contains(rs.getString(2))
+						&& cmb_cliente.getSelectedItem().toString().contains(rs.getString(3))) {
+					cliente_id = rs.getInt("cliente_id");
+					break;
+				}
+			}
+
+			if (cliente_id != 0) {
+				// El cliente fue encontrado en la base de datos, se puede realizar la edición
+				existe = true;
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+				fecha_Nacimiento = sdf.parse(in_fecha_nacimiento.getText());
+				fecha_Nacimiento = new java.sql.Date(fecha_Nacimiento.getTime());
+
+				PreparedStatement stm = (PreparedStatement) conexion.prepareStatement(
+						"UPDATE cliente SET nombre = ?, apellidos = ?, numero_telefono = ?, fecha_nacimiento = ?, contrasena = ? WHERE cliente_id = ?");
+				stm.setString(1, in_nombre_cliente.getText().trim());
+				stm.setString(2, in_apellidos_cliente.getText().trim());
+				stm.setString(3, in_numero_telefono.getText().trim());
+				stm.setString(4, in_fecha_nacimiento.getText().trim());
+				stm.setString(5, in_contrasena_cliente.getText().trim());
+				stm.setInt(6, cliente_id);
+				stm.executeUpdate();
+			} else {
+				JOptionPane.showMessageDialog(null,
+						"Error. No se encontró el cliente seleccionado en la base de datos.");
+			}
+		} catch (SQLException | ClassNotFoundException | ParseException e) {
 			e.printStackTrace();
 		}
 
@@ -673,9 +892,10 @@ public class Conexion {
 					}
 				}
 			}
-			
-			//SE VALIDA QUE LA FECHA DE ENTREGA DE LA RENTA NO SEA ANTERIOR A LA FECHA INICIAL
-			if(fechaInicial_NuevaRenta.after(fechaFinal_NuevaRenta)) {
+
+			// SE VALIDA QUE LA FECHA DE ENTREGA DE LA RENTA NO SEA ANTERIOR A LA FECHA
+			// INICIAL
+			if (fechaInicial_NuevaRenta.after(fechaFinal_NuevaRenta)) {
 				resultado = 3;
 			}
 
@@ -740,6 +960,46 @@ public class Conexion {
 		}
 	}
 
+	public void eliminar_Marca(JComboBox cmb_marca) {
+		conexion = null;
+		PreparedStatement stm = null;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			String selectedMarca = cmb_marca.getSelectedItem() != null ? cmb_marca.getSelectedItem().toString() : null;
+			System.out.println("Selected marca: " + selectedMarca);
+
+			if (selectedMarca != null) {
+				String query = "DELETE FROM marca WHERE nombre = ?";
+				stm = (PreparedStatement) conexion.prepareStatement(query);
+				stm.setString(1, selectedMarca);
+				int rowCount = stm.executeUpdate();
+
+				if (rowCount > 0) {
+					JOptionPane.showMessageDialog(null, "Marca eliminada correctamente");
+				} else {
+					JOptionPane.showMessageDialog(null,
+							"Error. No se encontró la marca seleccionada en la base de datos.");
+				}
+			} else {
+				JOptionPane.showMessageDialog(null, "Error. No se ha seleccionado ninguna marca.");
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (stm != null) {
+					stm.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	public void eliminar_Categoria(JComboBox cmb) {
 		conexion = null;
 		stm = null;
@@ -768,6 +1028,44 @@ public class Conexion {
 
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void eliminar_Cliente(JComboBox cmb_cliente) {
+		conexion = null;
+		stm = null;
+		rs = null;
+		int cliente_id = 0;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("SELECT * FROM cliente");
+
+			while (rs.next()) {
+				if (cmb_cliente.getSelectedItem().toString().contains(rs.getString(2))
+						&& cmb_cliente.getSelectedItem().toString().contains(rs.getString(3))) {
+					cliente_id = rs.getInt("cliente_id");
+					break;
+				}
+			}
+
+			if (cliente_id != 0) {
+				// El cliente fue encontrado en la base de datos, se puede realizar la
+				// eliminación
+				PreparedStatement stm = (PreparedStatement) conexion
+						.prepareStatement("DELETE FROM cliente WHERE cliente_id = ?");
+				stm.setInt(1, cliente_id);
+				stm.executeUpdate();
+			} else {
+				JOptionPane.showMessageDialog(null,
+						"Error. No se encontró el cliente seleccionado en la base de datos.");
+			}
+		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
