@@ -18,6 +18,7 @@ import javax.swing.table.DefaultTableModel;
 
 import com.mysql.jdbc.PreparedStatement;
 import com.mysql.jdbc.Statement;
+import java.util.ArrayList;
 
 public class Conexion {
 	Connection conexion = null;
@@ -41,6 +42,7 @@ public class Conexion {
 	java.sql.Date fecha_entrega_sql;
 	Date fecha_Nacimiento;
 	java.sql.Date fecha_Nacimiento_sql;
+	ArrayList<String> valores = new ArrayList<String>();
 
 	public Connection conectar() {
 		Connection conexion = null;
@@ -78,7 +80,7 @@ public class Conexion {
 				String nombre_completo = nombre + " " + apellidos;
 				String contrasena_Formato_String = new String(pwd.getPassword());
 
-				if (nombre_completo.equals(cliente.getText()) && contrasena.equals(contrasena_Formato_String)) {
+				if (nombre_completo.equals(cliente.getText()) && contrasena.equals(contrasena_Formato_String) && rs.getBoolean(7)) {
 					acceso = true;
 					break;
 				}
@@ -182,7 +184,8 @@ public class Conexion {
 			while (rs.next()) {
 				if (cmb.getSelectedItem().toString().contains(rs.getString(2))
 						&& cmb.getSelectedItem().toString().contains(String.valueOf(rs.getInt(7)))) {
-					tabla_Tarifas.addRow(new Object[] { rs.getString(4), rs.getString(2), rs.getInt(7), "$" + rs.getInt(6) });
+					tabla_Tarifas.addRow(
+							new Object[] { rs.getString(4), rs.getString(2), rs.getInt(7), "$" + rs.getInt(6) });
 				}
 			}
 			rs = stm.executeQuery("SELECT * FROM renta where es_visible = true");
@@ -190,8 +193,9 @@ public class Conexion {
 			while (rs.next()) {
 				if (cmb.getSelectedItem().toString().contains(rs.getString(8))
 						&& cmb.getSelectedItem().toString().contains(String.valueOf(rs.getInt(9)))) {
-					tabla_Rentas.addRow(new Object[] { rs.getString(8), rs.getInt(9), rs.getString(2) + " " + rs.getString(3), rs.getDate(6), rs.getDate(7),
-							"$" + rs.getDouble(10)});
+					tabla_Rentas.addRow(
+							new Object[] { rs.getString(8), rs.getInt(9), rs.getString(2) + " " + rs.getString(3),
+									rs.getDate(6), rs.getDate(7), "$" + rs.getDouble(10) });
 				}
 			}
 		} catch (SQLException | ClassNotFoundException e) {
@@ -229,7 +233,8 @@ public class Conexion {
 		conexion = null;
 		stm = null;
 		rs = null;
-		Boolean existente = false;
+		int vehiculo_id = 0;
+		Boolean existente = false, existente_antiguo = false;
 
 		try {
 			Class.forName(CONTROLADOR);
@@ -240,13 +245,26 @@ public class Conexion {
 			rs = stm.executeQuery("SELECT * FROM vehiculo");
 
 			while (rs.next()) {
-				if (rs.getString(2).equals(modelo.getText()) && rs.getInt(7) == Integer.parseInt(año.getText())
-						&& rs.getBoolean(9) == true) {
-					existente = true;
+				if (rs.getString(2).equals(modelo.getText()) && rs.getInt(7) == Integer.parseInt(año.getText())) {
+					if (rs.getBoolean(9) == true) {
+						existente = true;
+					} else {
+						existente_antiguo = true;
+					}
+
 				}
 			}
 
-			if (existente == false) {
+			rs = stm.executeQuery("SELECT * FROM vehiculo");
+			// SE BUSCA EL ID DE EL VEHICULO
+			while (rs.next()) {
+				if (modelo.getText().equals(rs.getString(2))
+						&& año.getText().equals(String.valueOf(rs.getInt(7)))) {
+					vehiculo_id = rs.getInt(1);
+				}
+			}
+
+			if (existente == false && existente_antiguo == false) {
 				PreparedStatement stm = (PreparedStatement) conexion
 						.prepareStatement("INSERT INTO vehiculo VALUE(?,?,?,?,?,?,?,?,?)");
 
@@ -259,6 +277,20 @@ public class Conexion {
 				stm.setString(7, año.getText());
 				stm.setString(8, cmb_aux.getSelectedItem().toString());
 				stm.setBoolean(9, true);
+				stm.executeUpdate();
+			} else if (existente == false && existente_antiguo == true) {
+				PreparedStatement stm = (PreparedStatement) conexion.prepareStatement(
+						"UPDATE vehiculo set nombre = ?, marca = ?, modelo = ?, transmision = ?, tarifa = ?, año = ?, categoria = ?, es_visible = ? where id_vehiculo = "
+								+ vehiculo_id);
+
+				stm.setString(1, nombre.getText().trim());
+				stm.setString(2, cmb.getSelectedItem().toString());
+				stm.setString(3, modelo.getText().trim());
+				stm.setString(4, transmision.getText().trim());
+				stm.setInt(5, Integer.valueOf(tarifa.getText()));
+				stm.setString(6, año.getText());
+				stm.setString(7, cmb_aux.getSelectedItem().toString());
+				stm.setBoolean(8, true);
 				stm.executeUpdate();
 			}
 		} catch (SQLException | ClassNotFoundException e) {
@@ -333,36 +365,64 @@ public class Conexion {
 		return false;
 	}
 
-	public boolean añadir_cliente(String nombre_cliente, String numero_telefono, String apellidos_cliente,
+	public boolean añadir_cliente(String nombre_cliente,String apellidos_cliente,String numero_telefono,
 			String contrasena_cliente, String fecha_nacimiento) {
 		conexion = null;
 		PreparedStatement stm = null;
 		ResultSet rs = null;
-		Boolean cliente_existente = false;
+		int cliente_id = 0;
+		Boolean cliente_existente = false, cliente_existente_antiguo = false;
 
 		try {
 			Class.forName(CONTROLADOR);
 			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
 			System.out.println("Conexión OK");
 
-			stm = (PreparedStatement) conexion.prepareStatement("SELECT * FROM cliente WHERE nombre = ?");
+			stm = (PreparedStatement) conexion.prepareStatement("SELECT * FROM cliente WHERE nombre = ? AND apellidos = ?");
 			stm.setString(1, nombre_cliente);
+			stm.setString(2, apellidos_cliente);
 			rs = stm.executeQuery();
 
-			while (rs.next() && rs.getBoolean(7) == true) {
-				cliente_existente = true;
+			while (rs.next()) {
+				if (rs.getBoolean(7) == true) {
+					cliente_existente = true;
+				} else {
+					cliente_existente_antiguo = true;
+				}
 				break;
 			}
 
-			if (!cliente_existente) {
+			// SE BUSCA EL ID DE EL CLIENTE
+			rs.close();
+			rs = stm.executeQuery("SELECT * FROM cliente");
+			while (rs.next()) {
+				if (nombre_cliente.equals(rs.getString(2)) && apellidos_cliente.equals(rs.getString(3))) {
+					cliente_id = rs.getInt(1);
+					break;
+				}
+			}
+
+			System.out.println(cliente_id);
+			if (!cliente_existente && !cliente_existente_antiguo) {
 				stm = (PreparedStatement) conexion.prepareStatement(
-						"INSERT INTO cliente (nombre, numero_telefono, apellidos, contrasena, fecha_nacimiento, es_visible) VALUES (?, ?, ?, ?, ?,?)");
+						"INSERT INTO cliente (nombre, apellidos, numero_telefono, contrasena, fecha_nacimiento, es_visible) VALUES (?, ?, ?, ?, ?,?)");
 				stm.setString(1, nombre_cliente.trim());
-				stm.setString(3, numero_telefono.trim());
 				stm.setString(2, apellidos_cliente.trim());
+				stm.setString(3, numero_telefono.trim());
 				stm.setString(4, contrasena_cliente.trim());
 				stm.setString(5, fecha_nacimiento.trim());
 				stm.setBoolean(6, true);
+				stm.executeUpdate();
+			} else if (!cliente_existente && cliente_existente_antiguo) {
+				stm = (PreparedStatement) conexion.prepareStatement(
+						"UPDATE cliente SET nombre = ?, apellidos = ?, numero_telefono = ?, fecha_nacimiento = ?, contrasena = ?, es_visible = ? WHERE cliente_id = ?");
+				stm.setString(1, nombre_cliente.trim());
+				stm.setString(2, apellidos_cliente.trim());
+				stm.setString(3, numero_telefono.trim());
+				stm.setString(4, fecha_nacimiento.trim());
+				stm.setString(5, contrasena_cliente.trim());
+				stm.setBoolean(6, true);
+				stm.setInt(7, cliente_id);
 				stm.executeUpdate();
 			}
 		} catch (SQLException | ClassNotFoundException e) {
@@ -501,7 +561,8 @@ public class Conexion {
 		conexion = null;
 		stm = null;
 		rs = null;
-		Boolean existente = false;
+		int id = 0;
+		Boolean existente = false, existente_antiguo = false;
 
 		try {
 			Class.forName(CONTROLADOR);
@@ -512,12 +573,26 @@ public class Conexion {
 			rs = stm.executeQuery("SELECT * FROM categoria");
 
 			while (rs.next()) {
-				if (rs.getString(2).equals(nombre.getText()) && rs.getBoolean(6) == true) {
-					existente = true;
+				if (rs.getString(2).equals(nombre.getText())) {
+					if (rs.getBoolean(6) == true) {
+						existente = true;
+					} else {
+						existente_antiguo = true;
+					}
+
 				}
 			}
 
-			if (existente == false) {
+			rs = stm.executeQuery("SELECT * FROM categoria");
+			// Ciclo para buscar y almacenar el ID de la categoria que se quiere modificar
+			while (rs.next()) {
+				if (rs.getString(2).equals(nombre.getText())) {
+					id = rs.getInt(1);
+				}
+			}
+			System.out.println(id);
+
+			if (existente == false && existente_antiguo == false) {
 				PreparedStatement stm = (PreparedStatement) conexion
 						.prepareStatement("INSERT INTO categoria VALUE(?,?,?,?,?,?)");
 
@@ -527,6 +602,16 @@ public class Conexion {
 				stm.setString(4, uso.getText().trim());
 				stm.setInt(5, Integer.valueOf(peso.getText()));
 				stm.setBoolean(6, true);
+				stm.executeUpdate();
+			} else if (existente == false && existente_antiguo == true) {
+				PreparedStatement stm = (PreparedStatement) conexion.prepareStatement(
+						"UPDATE categoria set nombre = ?, cantidad_llantas = ?, uso = ?, peso_promedio = ?, es_visible = ? where id = "
+								+ id);
+				stm.setString(1, nombre.getText().trim());
+				stm.setInt(2, Integer.valueOf(cant_llantas.getText()));
+				stm.setString(3, uso.getText().trim());
+				stm.setInt(4, Integer.valueOf(peso.getText()));
+				stm.setBoolean(5, true);
 				stm.executeUpdate();
 			}
 		} catch (SQLException | ClassNotFoundException e) {
@@ -681,7 +766,7 @@ public class Conexion {
 
 		return existe;
 	}
-	
+
 	public boolean editar_Categoria(JTextField nombre, JTextField cant_llantas, JTextField uso, JTextField peso,
 			JComboBox cmb) {
 		conexion = null;
@@ -1046,6 +1131,7 @@ public class Conexion {
 				// ESTE IF VALIDA SI LA RENTA QUE SE QUIERE ELIMINAR ES LA MISMA QUE ESTA
 				// SIENDO EVALUADA EN EL SELECT Y DE ESTA MANERA SE OBTIENE EL ID
 				if (cmb.getSelectedItem().toString().contains(rs.getString(8))
+						&& cmb.getSelectedItem().toString().contains(String.valueOf(rs.getInt(9)))
 						&& cmb.getSelectedItem().toString().contains(rs.getString(6))
 						&& cmb.getSelectedItem().toString().contains(rs.getString(7))) {
 					renta_id = rs.getInt(1);
@@ -1085,7 +1171,7 @@ public class Conexion {
 		return costo_total;
 	}
 
-	public void llenar_CMB_Clientes(JComboBox cmb_cliente) {
+	public void llenar_CMB_Clientes(JComboBox cmb) {
 		conexion = null;
 		stm = null;
 		rs = null;
@@ -1097,10 +1183,41 @@ public class Conexion {
 
 			stm = (Statement) conexion.createStatement();
 			rs = stm.executeQuery("SELECT * FROM cliente where es_visible = true");
+			valores.clear();
 
+			// SE AÑADEN LOS VALORES DENTRO DE LA CONSULTA AL COMBOBOX
 			while (rs.next()) {
-				cmb_cliente.addItem(rs.getString(2) + " " + rs.getString(3));
+				cmb.addItem(rs.getString(2) + " " + rs.getString(3));
 			}
+
+			// SE AGREGAN LOS VALORES QUE ESTEN DENTRO DEL COMBOBOX A UN ARRAYLIST
+			for (int i = 0; i < cmb.getItemCount(); i++) {
+				valores.add(cmb.getItemAt(i).toString());
+			}
+
+			// SE RECORRE EL ARRAYLIST PARA VERIFICAR SI HAY VALORES REPETIDOS, EN CASO DE
+			// QUE LOS HAYA SE ELIMINAN DE EL ARRAY Y EL COMOBOBOX
+			for (int i = 0; i < valores.size(); i++) {
+				for (int j = 0; j < valores.size(); j++) {
+					if (valores.get(i).equals(valores.get(j)) && i != j) {
+						valores.remove(j);
+						cmb.removeItemAt(j);
+					}
+				}
+			}
+
+			// SE VUELVE A HACER LA CONSULTA PARA REMOVER ELEMENTOS QUE ESTEN DENTRO DEL
+			// COMBOBOX QUE NO HAYAN SIDO ENCONTRADOS COMO REPETIDOS PERO ESTEN ELIMINADOS
+			rs = stm.executeQuery("SELECT * FROM cliente");
+			while (rs.next()) {
+				for (int i = 0; i < cmb.getItemCount(); i++) {
+					if (cmb.getItemAt(i).toString().contains(rs.getString(2))
+							&& cmb.getItemAt(i).toString().contains(rs.getString(3)) && rs.getBoolean(7) == false) {
+						cmb.removeItemAt(i);
+					}
+				}
+			}
+
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1119,10 +1236,42 @@ public class Conexion {
 
 			stm = (Statement) conexion.createStatement();
 			rs = stm.executeQuery("SELECT * FROM vehiculo where es_visible = true");
+			valores.clear();
 
+			// SE AÑADEN LOS VALORES DENTRO DE LA CONSULTA AL COMBOBOX
 			while (rs.next()) {
 				cmb.addItem(rs.getString(4) + " " + rs.getString(3) + " " + rs.getString(2) + " " + rs.getInt(7));
 			}
+
+			// SE AGREGAN LOS VALORES QUE ESTEN DENTRO DEL COMBOBOX A UN ARRAYLIST
+			for (int i = 0; i < cmb.getItemCount(); i++) {
+				valores.add(cmb.getItemAt(i).toString());
+			}
+
+			// SE RECORRE EL ARRAYLIST PARA VERIFICAR SI HAY VALORES REPETIDOS, EN CASO DE
+			// QUE LOS HAYA SE ELIMINAN DE EL ARRAY Y EL COMOBOBOX
+			for (int i = 0; i < valores.size(); i++) {
+				for (int j = 0; j < valores.size(); j++) {
+					if (valores.get(i).equals(valores.get(j)) && i != j) {
+						valores.remove(j);
+						cmb.removeItemAt(j);
+					}
+				}
+			}
+
+			// SE VUELVE A HACER LA CONSULTA PARA REMOVER ELEMENTOS QUE ESTEN DENTRO DEL
+			// COMBOBOX QUE NO HAYAN SIDO ENCONTRADOS COMO REPETIDOS PERO ESTEN ELIMINADOS
+			rs = stm.executeQuery("SELECT * FROM vehiculo");
+			while (rs.next()) {
+				for (int i = 0; i < cmb.getItemCount(); i++) {
+					if (cmb.getItemAt(i).toString().contains(rs.getString(2))
+							&& cmb.getItemAt(i).toString().contains(String.valueOf(rs.getInt(7)))
+							&& rs.getBoolean(9) == false) {
+						cmb.removeItemAt(i);
+					}
+				}
+			}
+
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1141,17 +1290,47 @@ public class Conexion {
 
 			stm = (Statement) conexion.createStatement();
 			rs = stm.executeQuery("SELECT * FROM categoria where es_visible = true");
+			valores.clear();
 
+			// SE AÑADEN LOS VALORES DENTRO DE LA CONSULTA AL COMBOBOX
 			while (rs.next()) {
 				cmb.addItem(rs.getString(2));
 			}
+
+			// SE AGREGAN LOS VALORES QUE ESTEN DENTRO DEL COMBOBOX A UN ARRAYLIST
+			for (int i = 0; i < cmb.getItemCount(); i++) {
+				valores.add(cmb.getItemAt(i).toString());
+			}
+
+			// SE RECORRE EL ARRAYLIST PARA VERIFICAR SI HAY VALORES REPETIDOS, EN CASO DE
+			// QUE LOS HAYA SE ELIMINAN DE EL ARRAY Y EL COMOBOBOX
+			for (int i = 0; i < valores.size(); i++) {
+				for (int j = 0; j < valores.size(); j++) {
+					if (valores.get(i).equals(valores.get(j)) && i != j) {
+						valores.remove(j);
+						cmb.removeItemAt(j);
+					}
+				}
+			}
+
+			// SE VUELVE A HACER LA CONSULTA PARA REMOVER ELEMENTOS QUE ESTEN DENTRO DEL
+			// COMBOBOX QUE NO HAYAN SIDO ENCONTRADOS COMO REPETIDOS PERO ESTEN ELIMINADOS
+			rs = stm.executeQuery("SELECT * FROM categoria");
+			while (rs.next()) {
+				for (int i = 0; i < cmb.getItemCount(); i++) {
+					if (cmb.getItemAt(i).toString().equals(rs.getString(2)) && rs.getBoolean(6) == false) {
+						cmb.removeItemAt(i);
+					}
+				}
+			}
+
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	public void llenar_CMB_Marcas(JComboBox cmb_marca) {
+	public void llenar_CMB_Marcas(JComboBox cmb) {
 		conexion = null;
 		stm = null;
 		rs = null;
@@ -1163,10 +1342,40 @@ public class Conexion {
 
 			stm = (Statement) conexion.createStatement();
 			rs = stm.executeQuery("SELECT * FROM marca where es_visible = true");
+			valores.clear();
 
+			// SE AÑADEN LOS VALORES DENTRO DE LA CONSULTA AL COMBOBOX
 			while (rs.next()) {
-				cmb_marca.addItem(rs.getString(1));
+				cmb.addItem(rs.getString(1));
 			}
+
+			// SE AGREGAN LOS VALORES QUE ESTEN DENTRO DEL COMBOBOX A UN ARRAYLIST
+			for (int i = 0; i < cmb.getItemCount(); i++) {
+				valores.add(cmb.getItemAt(i).toString());
+			}
+
+			// SE RECORRE EL ARRAYLIST PARA VERIFICAR SI HAY VALORES REPETIDOS, EN CASO DE
+			// QUE LOS HAYA SE ELIMINAN DE EL ARRAY Y EL COMOBOBOX
+			for (int i = 0; i < valores.size(); i++) {
+				for (int j = 0; j < valores.size(); j++) {
+					if (valores.get(i).equals(valores.get(j)) && i != j) {
+						valores.remove(j);
+						cmb.removeItemAt(j);
+					}
+				}
+			}
+
+			// SE VUELVE A HACER LA CONSULTA PARA REMOVER ELEMENTOS QUE ESTEN DENTRO DEL
+			// COMBOBOX QUE NO HAYAN SIDO ENCONTRADOS COMO REPETIDOS PERO ESTEN ELIMINADOS
+			rs = stm.executeQuery("SELECT * FROM marca");
+			while (rs.next()) {
+				for (int i = 0; i < cmb.getItemCount(); i++) {
+					if (cmb.getItemAt(i).toString().equals(rs.getString(1)) && rs.getBoolean(6) == false) {
+						cmb.removeItemAt(i);
+					}
+				}
+			}
+
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1185,10 +1394,138 @@ public class Conexion {
 
 			stm = (Statement) conexion.createStatement();
 			rs = stm.executeQuery("SELECT * FROM renta where es_visible = true");
+			valores.clear();
 
+			// SE AÑADEN LOS VALORES DENTRO DE LA CONSULTA AL COMBOBOX
 			while (rs.next()) {
 				cmb.addItem(rs.getString(2) + " " + rs.getString(3) + " - " + rs.getString(8) + " " + rs.getInt(9)
 						+ " - " + rs.getString(6) + " a " + rs.getString(7));
+			}
+
+			// SE AGREGAN LOS VALORES QUE ESTEN DENTRO DEL COMBOBOX A UN ARRAYLIST
+			for (int i = 0; i < cmb.getItemCount(); i++) {
+				valores.add(cmb.getItemAt(i).toString());
+			}
+
+			// SE RECORRE EL ARRAYLIST PARA VERIFICAR SI HAY VALORES REPETIDOS, EN CASO DE
+			// QUE LOS HAYA SE ELIMINAN DE EL ARRAY Y EL COMOBOBOX
+			for (int i = 0; i < valores.size(); i++) {
+				for (int j = 0; j < valores.size(); j++) {
+					if (valores.get(i).equals(valores.get(j)) && i != j) {
+						valores.remove(j);
+						cmb.removeItemAt(j);
+					}
+				}
+			}
+
+			// SE VUELVE A HACER LA CONSULTA PARA REMOVER ELEMENTOS QUE ESTEN DENTRO DEL
+			// COMBOBOX QUE NO HAYAN SIDO ENCONTRADOS COMO REPETIDOS PERO ESTEN ELIMINADOS
+			rs = stm.executeQuery("SELECT * FROM renta");
+			while (rs.next()) {
+				for (int i = 0; i < cmb.getItemCount(); i++) {
+					if (cmb.getItemAt(i).toString().contains(rs.getString(2))
+							&& cmb.getItemAt(i).toString().contains(rs.getString(3))
+							&& cmb.getItemAt(i).toString().contains(rs.getString(8))
+							&& cmb.getItemAt(i).toString().contains(String.valueOf(rs.getInt(9)))
+							&& rs.getBoolean(11) == false) {
+						cmb.removeItemAt(i);
+					}
+				}
+			}
+
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void llenar_TextField_Vehiculos(JComboBox cmb, JTextField nombre, JTextField modelo, JTextField tarifa,
+			JTextField marca, JTextField transmision, JTextField año) {
+		conexion = null;
+		stm = null;
+		rs = null;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("select * from vehiculo");
+
+			while (rs.next()) {
+				if (cmb.getSelectedItem().toString().contains(rs.getString(2))
+						&& cmb.getSelectedItem().toString().contains(String.valueOf(rs.getInt(7)))) {
+					nombre.setText(rs.getString(3));
+					modelo.setText(rs.getString(2));
+					tarifa.setText(String.valueOf(rs.getInt(6)));
+					marca.setText(rs.getString(4));
+					transmision.setText(rs.getString(5));
+					año.setText(String.valueOf(rs.getInt(7)));
+
+				}
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void llenar_TextField_Clientes(JComboBox cmb, JTextField nombre, JTextField telefono, JTextField apellidos,
+			JTextField fecha_nacimiento) {
+		conexion = null;
+		stm = null;
+		rs = null;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("select * from cliente");
+
+			while (rs.next()) {
+				if (cmb.getSelectedItem().toString().contains(rs.getString(2))
+						&& cmb.getSelectedItem().toString().contains(rs.getString(3))) {
+					nombre.setText(rs.getString(2));
+					telefono.setText(rs.getString(4));
+					apellidos.setText(rs.getString(3));
+					fecha_nacimiento.setText(rs.getDate(6).toString());
+
+				}
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void llenar_TextField_Rentas(JComboBox cmb, JTextField nombre, JTextField apellidos,
+			JTextField fecha_inicial, JTextField fecha_final) {
+		conexion = null;
+		stm = null;
+		rs = null;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("select * from renta");
+
+			while (rs.next()) {
+				if (cmb.getSelectedItem().toString().contains(rs.getString(8))
+						&& cmb.getSelectedItem().toString().contains(String.valueOf(rs.getInt(9)))
+						&& cmb.getSelectedItem().toString().contains(rs.getString(6))
+						&& cmb.getSelectedItem().toString().contains(rs.getString(7))) {
+					nombre.setText(rs.getString(2));
+					apellidos.setText(rs.getString(3));
+					fecha_inicial.setText(rs.getDate(6).toString());
+					fecha_final.setText(rs.getDate(7).toString());
+
+				}
 			}
 		} catch (SQLException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -1224,4 +1561,34 @@ public class Conexion {
 			e.printStackTrace();
 		}
 	}
+
+	public void llenar_TextField_Marcas(JComboBox cmb, JTextField nombre, JTextField pais, JTextField correo,
+			JTextField representante, JTextField numero) {
+		conexion = null;
+		stm = null;
+		rs = null;
+
+		try {
+			Class.forName(CONTROLADOR);
+			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+			System.out.println("Conexión OK");
+
+			stm = (Statement) conexion.createStatement();
+			rs = stm.executeQuery("select * from marca");
+
+			while (rs.next()) {
+				if (cmb.getSelectedItem().toString().equals(rs.getString(1))) {
+					nombre.setText(rs.getString(1));
+					pais.setText(rs.getString(3));
+					correo.setText(rs.getString(5));
+					representante.setText(rs.getString(2));
+					numero.setText(rs.getString(4));
+				}
+			}
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 }

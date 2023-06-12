@@ -317,7 +317,6 @@ public class Ventana extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				cmb.removeAllItems();
 				conexion.llenar_CMB_Vehiculos(cmb);
 				actual = "vehiculos_consultar";
 				route();
@@ -328,8 +327,6 @@ public class Ventana extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				cmb.removeAllItems();
-				cmb_aux.removeAllItems();
 				conexion.llenar_CMB_Marcas(cmb);
 				conexion.llenar_CMB_Categorias(cmb_aux);
 				actual = "vehiculos_añadir";
@@ -341,8 +338,6 @@ public class Ventana extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				cmb.removeAllItems();
-				cmb_aux.removeAllItems();
 				conexion.llenar_CMB_Vehiculos(cmb);
 				conexion.llenar_CMB_Categorias(cmb_aux);
 				actual = "vehiculos_editar";
@@ -354,7 +349,6 @@ public class Ventana extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				cmb.removeAllItems();
 				conexion.llenar_CMB_Vehiculos(cmb);
 				actual = "vehiculos_eliminar";
 				route();
@@ -779,6 +773,15 @@ public class Ventana extends JFrame {
 		btn_Editar.setFont(new Font("Arial", Font.BOLD, 20));
 		btn_Editar.setForeground(Color.white);
 		vehiculos_editar.add(btn_Editar);
+		
+		cmb.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				conexion.llenar_TextField_Vehiculos(
+						cmb, in_nombre_vehiculo, in_modelo_vehiculo, in_tarifa_vehiculo, in_marca_vehiculo, in_transmision_vehiculo, in_año_vehiculo);
+			}
+		});
 
 		btn_Volver.addActionListener(new ActionListener() {
 			@Override
@@ -967,6 +970,15 @@ public class Ventana extends JFrame {
 		btn_Eliminar.setForeground(Color.white);
 		vehiculos_eliminar.add(btn_Eliminar);
 
+		cmb.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				conexion.llenar_TextField_Vehiculos(
+						cmb, in_nombre_vehiculo, in_modelo_vehiculo, in_tarifa_vehiculo, in_marca_vehiculo, in_transmision_vehiculo, in_año_vehiculo);
+			}
+		});
+		
 		btn_Volver.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1081,7 +1093,6 @@ public class Ventana extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				actual = "editar_clientes";
-				cmb_cliente.removeAllItems();
 				conexion.llenar_CMB_Clientes(cmb_cliente);
 				route();
 			}
@@ -1108,7 +1119,6 @@ public class Ventana extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				cmb_cliente.removeAllItems();
 				conexion.llenar_CMB_Clientes(cmb_cliente);
 				actual = "eliminar_cliente";
 				route();
@@ -1463,6 +1473,14 @@ public class Ventana extends JFrame {
 		in_fecha_nacimiento.setFont(new Font("Arial", Font.PLAIN, 16));
 		editar_clientes.add(in_fecha_nacimiento);
 
+		cmb_cliente.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				conexion.llenar_TextField_Clientes(cmb_cliente, in_nombre_cliente, in_numero_telefono, in_apellidos_cliente, in_fecha_nacimiento);
+			}
+		});		
+		
 		JButton btn_Volver = new JButton("Volver");
 		btn_Volver.setSize(250, 30);
 		btn_Volver.setLocation(275, 455);
@@ -1647,6 +1665,14 @@ public class Ventana extends JFrame {
 		in_Contraseña.setEditable(false);
 		eliminar_cliente.add(in_Contraseña);
 
+		cmb_cliente.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				conexion.llenar_TextField_Clientes(cmb_cliente, in_nombre_c, in_numero_tel, in_apellidos_c, in_fecha_nac);
+			}
+		});	
+		
 		JButton btn_Volver = new JButton("Volver");
 		btn_Volver.setSize(250, 30);
 		btn_Volver.setLocation(275, 455);
@@ -1788,7 +1814,6 @@ public class Ventana extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				cmb.removeAllItems();
 				conexion.llenar_CMB_Vehiculos(cmb);
 				actual = "rentas_añadir";
 				route();
@@ -1799,7 +1824,6 @@ public class Ventana extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				cmb.removeAllItems();
 				conexion.llenar_CMB_Rentas(cmb);
 				actual = "rentas_editar";
 				route();
@@ -1810,7 +1834,6 @@ public class Ventana extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				cmb.removeAllItems();
 				conexion.llenar_CMB_Rentas(cmb);
 				actual = "rentas_eliminar";
 				route();
@@ -2141,6 +2164,15 @@ public class Ventana extends JFrame {
 		in_fecha_final.setFont(new Font("Arial", Font.PLAIN, 16));
 		rentas_editar.add(in_fecha_final);
 
+		cmb.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				conexion.llenar_TextField_Rentas(cmb, in_nombre_cliente, in_apellidos_cliente, in_fecha_inicial, in_fecha_final);
+			}
+		});
+		
 		JButton btn_Volver = new JButton("Volver");
 		btn_Volver.setSize(250, 30);
 		btn_Volver.setLocation(275, 455);
@@ -2312,6 +2344,15 @@ public class Ventana extends JFrame {
 		in_fecha_final.setEditable(false);
 		rentas_eliminar.add(in_fecha_final);
 
+		cmb.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				conexion.llenar_TextField_Rentas(cmb, in_nombre_cliente, in_apellidos_cliente, in_fecha_inicial, in_fecha_final);
+			}
+		});
+		
 		JButton btn_Volver = new JButton("Volver");
 		btn_Volver.setSize(250, 30);
 		btn_Volver.setLocation(275, 455);
@@ -2463,7 +2504,6 @@ public class Ventana extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				cmb.removeAllItems();
 				conexion.llenar_CMB_Categorias(cmb);
 				actual = "categorias_editar";
 				route();
@@ -2474,7 +2514,6 @@ public class Ventana extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				cmb.removeAllItems();
 				conexion.llenar_CMB_Categorias(cmb);
 				actual = "categorias_eliminar";
 				route();
@@ -2817,18 +2856,15 @@ public class Ventana extends JFrame {
 		btn_Editar.setFont(new Font("Arial", Font.BOLD, 20));
 		btn_Editar.setForeground(Color.white);
 		categorias_Editar.add(btn_Editar);
-
-		
-		/*
+	
 		cmb.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				System.out.println("Hola");
 				conexion.llenar_TextField_Categorias(cmb, in_nombre_categoria, in_cantidad_llantas_categoria, in_uso_categoria, in_peso_categoria);
 			}
-		});*/
+		});
 
 		btn_Volver.addActionListener(new ActionListener() {
 			@Override
@@ -2997,9 +3033,7 @@ public class Ventana extends JFrame {
 		btn_Eliminar.setForeground(Color.white);
 		categorias_Eliminar.add(btn_Eliminar);
 
-		/*
 		cmb.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
@@ -3007,7 +3041,7 @@ public class Ventana extends JFrame {
 					conexion.llenar_TextField_Categorias(cmb, in_nombre_categoria, in_cantidad_llantas_categoria, in_uso_categoria, in_peso_categoria);
 				}
 			}
-		});*/
+		});
 		
 		btn_Volver.addActionListener(new ActionListener() {
 			@Override
@@ -3121,7 +3155,6 @@ public class Ventana extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				actual = "editar_marca";
-				cmb_marca.removeAllItems();
 				conexion.llenar_CMB_Marcas(cmb_marca);
 				route();
 			}
@@ -3149,7 +3182,6 @@ public class Ventana extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				actual = "eliminar_marca";
-				cmb_marca.removeAllItems();
 				conexion.llenar_CMB_Marcas(cmb_marca);
 				route();
 			}
@@ -3500,6 +3532,14 @@ public class Ventana extends JFrame {
 		in_numero_marca.setFont(new Font("Arial", Font.PLAIN, 16));
 		editar_marca.add(in_numero_marca);
 
+		cmb_marca.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				conexion.llenar_TextField_Marcas(cmb_marca, in_nombre_marca, in_pais_origen, in_correo_marca, in_representante_marca, in_numero_marca);
+			}
+		});
+		
 		JButton btn_Volver = new JButton("Volver");
 		btn_Volver.setSize(250, 30);
 		btn_Volver.setLocation(275, 455);
@@ -3667,6 +3707,14 @@ public class Ventana extends JFrame {
 		in_numero_marca.setFont(new Font("Arial", Font.PLAIN, 16));
 		eliminar_marca.add(in_numero_marca);
 
+		cmb_marca.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				conexion.llenar_TextField_Marcas(cmb_marca, in_nombre_marca, in_origen_marca, in_correo_marca, in_representante_marca, in_numero_marca);
+			}
+		});
+		
 		JButton btn_Volver = new JButton("Volver");
 		btn_Volver.setSize(250, 30);
 		btn_Volver.setLocation(275, 455);
