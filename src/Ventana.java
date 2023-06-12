@@ -28,6 +28,8 @@ public class Ventana extends JFrame {
 	JComboBox cmb_aux = new JComboBox();
 	JComboBox cmb_marca = new JComboBox();
 	JComboBox cmb_cliente = new JComboBox();
+	JComboBox cmb_renta = new JComboBox();
+	JComboBox cmb_categoria = new JComboBox();
 
 	public Ventana() {
 		this.setVisible(true);
@@ -327,7 +329,7 @@ public class Ventana extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				conexion.llenar_CMB_Marcas(cmb);
+				conexion.llenar_CMB_Marcas(cmb_marca);
 				conexion.llenar_CMB_Categorias(cmb_aux);
 				actual = "vehiculos_añadir";
 				route();
@@ -492,9 +494,9 @@ public class Ventana extends JFrame {
 				icono_añadir.getHeight(), Image.SCALE_SMOOTH)));
 		vehiculos_añadir.add(icono_añadir);
 
-		cmb.setSize(200, 30);
-		cmb.setLocation(285, 110);
-		vehiculos_añadir.add(cmb);
+		cmb_marca.setSize(200, 30);
+		cmb_marca.setLocation(285, 110);
+		vehiculos_añadir.add(cmb_marca);
 
 		cmb_aux.setSize(200, 30);
 		cmb_aux.setLocation(625, 110);
@@ -607,7 +609,7 @@ public class Ventana extends JFrame {
 					if (validarDigitos(in_nombre_vehiculo) && validarDigitos(in_transmision_vehiculo)) {
 						if (validarNumeros(in_año_vehiculo) && validarNumeros(in_tarifa_vehiculo)) {
 							if (!conexion.añadir_Vehiculo(in_nombre_vehiculo, in_modelo_vehiculo,
-									in_transmision_vehiculo, in_tarifa_vehiculo, in_año_vehiculo, cmb, cmb_aux)) {
+									in_transmision_vehiculo, in_tarifa_vehiculo, in_año_vehiculo, cmb_marca, cmb_aux)) {
 								JOptionPane.showMessageDialog(null, "Vehiculo añadido correctamente");
 								in_año_vehiculo.setText("");
 								in_modelo_vehiculo.setText("");
@@ -1824,7 +1826,7 @@ public class Ventana extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				conexion.llenar_CMB_Rentas(cmb);
+				conexion.llenar_CMB_Rentas(cmb_renta);
 				actual = "rentas_editar";
 				route();
 			}
@@ -1834,7 +1836,7 @@ public class Ventana extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				conexion.llenar_CMB_Rentas(cmb);
+				conexion.llenar_CMB_Rentas(cmb_renta);
 				actual = "rentas_eliminar";
 				route();
 			}
@@ -2106,9 +2108,9 @@ public class Ventana extends JFrame {
 				icono_añadir.getHeight(), Image.SCALE_SMOOTH)));
 		rentas_editar.add(icono_añadir);
 
-		cmb.setSize(440, 30);
-		cmb.setLocation(325, 110);
-		rentas_editar.add(cmb);
+		cmb_renta.setSize(440, 30);
+		cmb_renta.setLocation(325, 110);
+		rentas_editar.add(cmb_renta);
 
 		JLabel vehiculo_renta = new JLabel("Selecciona la renta que deseas editar");
 		vehiculo_renta.setSize(300, 30);
@@ -2164,12 +2166,12 @@ public class Ventana extends JFrame {
 		in_fecha_final.setFont(new Font("Arial", Font.PLAIN, 16));
 		rentas_editar.add(in_fecha_final);
 
-		cmb.addActionListener(new ActionListener() {
+		cmb_renta.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				conexion.llenar_TextField_Rentas(cmb, in_nombre_cliente, in_apellidos_cliente, in_fecha_inicial, in_fecha_final);
+				conexion.llenar_TextField_Rentas(cmb_renta, in_nombre_cliente, in_apellidos_cliente, in_fecha_inicial, in_fecha_final);
 			}
 		});
 		
@@ -2211,22 +2213,22 @@ public class Ventana extends JFrame {
 										"¿Está seguro de editar esta renta?");
 								if (confirmacion == 0) {
 									if (conexion.editar_rentas(in_nombre_cliente, in_apellidos_cliente,
-											in_fecha_inicial, in_fecha_final, cmb) == 0) {
+											in_fecha_inicial, in_fecha_final, cmb_renta) == 0) {
 										JOptionPane.showMessageDialog(null, "Renta editada correctamente");
 										in_apellidos_cliente.setText("");
 										in_fecha_final.setText("");
 										in_fecha_inicial.setText("");
 										in_nombre_cliente.setText("");
 									} else if (conexion.editar_rentas(in_nombre_cliente, in_apellidos_cliente,
-											in_fecha_inicial, in_fecha_final, cmb) == 1) {
+											in_fecha_inicial, in_fecha_final, cmb_renta) == 1) {
 										JOptionPane.showMessageDialog(null,
 												"Error. Compruebe que las fechas no se cruzen con otras rentas");
 									} else if (conexion.editar_rentas(in_nombre_cliente, in_apellidos_cliente,
-											in_fecha_inicial, in_fecha_final, cmb) == 2) {
+											in_fecha_inicial, in_fecha_final, cmb_renta) == 2) {
 										JOptionPane.showMessageDialog(null,
 												"Error. Este cliente no se encuentra registrado");
 									} else if (conexion.editar_rentas(in_nombre_cliente, in_apellidos_cliente,
-											in_fecha_inicial, in_fecha_final, cmb) == 3) {
+											in_fecha_inicial, in_fecha_final, cmb_renta) == 3) {
 										JOptionPane.showMessageDialog(null, "Error. Fecha de entrega no valida");
 									}
 								}
@@ -2282,9 +2284,9 @@ public class Ventana extends JFrame {
 				icono_añadir.getHeight(), Image.SCALE_SMOOTH)));
 		rentas_eliminar.add(icono_añadir);
 
-		cmb.setSize(440, 30);
-		cmb.setLocation(325, 110);
-		rentas_eliminar.add(cmb);
+		cmb_renta.setSize(440, 30);
+		cmb_renta.setLocation(325, 110);
+		rentas_eliminar.add(cmb_renta);
 
 		JLabel vehiculo_renta = new JLabel("Selecciona la renta que deseas eliminar");
 		vehiculo_renta.setSize(300, 30);
@@ -2344,12 +2346,12 @@ public class Ventana extends JFrame {
 		in_fecha_final.setEditable(false);
 		rentas_eliminar.add(in_fecha_final);
 
-		cmb.addActionListener(new ActionListener() {
+		cmb_renta.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				conexion.llenar_TextField_Rentas(cmb, in_nombre_cliente, in_apellidos_cliente, in_fecha_inicial, in_fecha_final);
+				conexion.llenar_TextField_Rentas(cmb_renta, in_nombre_cliente, in_apellidos_cliente, in_fecha_inicial, in_fecha_final);
 			}
 		});
 		
@@ -2384,7 +2386,7 @@ public class Ventana extends JFrame {
 				// TODO Auto-generated method stub
 				int confirmacion = JOptionPane.showConfirmDialog(null, "¿Está seguro de eliminar esta renta?");
 				if (confirmacion == 0) {
-					conexion.eliminar_Renta(cmb);
+					conexion.eliminar_Renta(cmb_renta);
 					JOptionPane.showMessageDialog(null, "Renta eliminada correctamente");
 				}
 			}
@@ -2504,7 +2506,7 @@ public class Ventana extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				conexion.llenar_CMB_Categorias(cmb);
+				conexion.llenar_CMB_Categorias(cmb_categoria);
 				actual = "categorias_editar";
 				route();
 			}
@@ -2514,7 +2516,7 @@ public class Ventana extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				conexion.llenar_CMB_Categorias(cmb);
+				conexion.llenar_CMB_Categorias(cmb_categoria);
 				actual = "categorias_eliminar";
 				route();
 			}
@@ -2771,9 +2773,9 @@ public class Ventana extends JFrame {
 		categorias_Editar.add(icono_editar);
 
 		
-		cmb.setSize(440, 30);
-		cmb.setLocation(325, 120);
-		categorias_Editar.add(cmb);
+		cmb_categoria.setSize(440, 30);
+		cmb_categoria.setLocation(325, 120);
+		categorias_Editar.add(cmb_categoria);
 
 		JLabel instruccion = new JLabel("Selecciona la categoria que deseas editar");
 		instruccion.setSize(300, 30);
@@ -2857,12 +2859,12 @@ public class Ventana extends JFrame {
 		btn_Editar.setForeground(Color.white);
 		categorias_Editar.add(btn_Editar);
 	
-		cmb.addActionListener(new ActionListener() {
+		cmb_categoria.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				conexion.llenar_TextField_Categorias(cmb, in_nombre_categoria, in_cantidad_llantas_categoria, in_uso_categoria, in_peso_categoria);
+				conexion.llenar_TextField_Categorias(cmb_categoria, in_nombre_categoria, in_cantidad_llantas_categoria, in_uso_categoria, in_peso_categoria);
 			}
 		});
 
@@ -2887,7 +2889,7 @@ public class Ventana extends JFrame {
 									"¿Está seguro de editar esta categoria?");
 							if (confirmacion == 0) {
 								if (conexion.editar_Categoria(in_nombre_categoria, in_cantidad_llantas_categoria,
-										in_uso_categoria, in_peso_categoria, cmb)) {
+										in_uso_categoria, in_peso_categoria, cmb_categoria)) {
 									JOptionPane.showMessageDialog(null, "Categoria editada correctamente");
 									in_cantidad_llantas_categoria.setText("");
 									in_nombre_categoria.setText("");
@@ -2947,9 +2949,9 @@ public class Ventana extends JFrame {
 				icono_editar.getHeight(), Image.SCALE_SMOOTH)));
 		categorias_Eliminar.add(icono_editar);
 
-		cmb.setSize(440, 30);
-		cmb.setLocation(325, 120);
-		categorias_Eliminar.add(cmb);
+		cmb_categoria.setSize(440, 30);
+		cmb_categoria.setLocation(325, 120);
+		categorias_Eliminar.add(cmb_categoria);
 
 		JLabel instruccion = new JLabel("Selecciona la categoria que deseas eliminar");
 		instruccion.setSize(300, 30);
@@ -2967,6 +2969,7 @@ public class Ventana extends JFrame {
 		in_nombre_categoria.setSize(280, 30);
 		in_nombre_categoria.setLocation(250, 240);
 		in_nombre_categoria.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_nombre_categoria.setEditable(false);
 		categorias_Eliminar.add(in_nombre_categoria);
 
 		JLabel uso_categoria = new JLabel("Ingresa el uso dado para la categoria");
@@ -2979,6 +2982,7 @@ public class Ventana extends JFrame {
 		in_uso_categoria.setSize(280, 30);
 		in_uso_categoria.setLocation(585, 240);
 		in_uso_categoria.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_uso_categoria.setEditable(false);
 		categorias_Eliminar.add(in_uso_categoria);
 
 		JLabel cantidad_llantas_categoria_1 = new JLabel("Ingresa la cantidad de llantas que");
@@ -2997,6 +3001,7 @@ public class Ventana extends JFrame {
 		in_cantidad_llantas_categoria.setSize(280, 30);
 		in_cantidad_llantas_categoria.setLocation(250, 380);
 		in_cantidad_llantas_categoria.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_cantidad_llantas_categoria.setEditable(false);
 		categorias_Eliminar.add(in_cantidad_llantas_categoria);
 
 		JLabel peso_categoria_1 = new JLabel("Ingresa el peso promedio de los");
@@ -3015,6 +3020,7 @@ public class Ventana extends JFrame {
 		in_peso_categoria.setSize(280, 30);
 		in_peso_categoria.setLocation(585, 380);
 		in_peso_categoria.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_peso_categoria.setEditable(false);
 		categorias_Eliminar.add(in_peso_categoria);
 
 		JButton btn_Volver = new JButton("Volver");
@@ -3033,12 +3039,12 @@ public class Ventana extends JFrame {
 		btn_Eliminar.setForeground(Color.white);
 		categorias_Eliminar.add(btn_Eliminar);
 
-		cmb.addActionListener(new ActionListener() {
+		cmb_categoria.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				if(cmb.getSelectedItem() != null) {
-					conexion.llenar_TextField_Categorias(cmb, in_nombre_categoria, in_cantidad_llantas_categoria, in_uso_categoria, in_peso_categoria);
+					conexion.llenar_TextField_Categorias(cmb_categoria, in_nombre_categoria, in_cantidad_llantas_categoria, in_uso_categoria, in_peso_categoria);
 				}
 			}
 		});
@@ -3058,7 +3064,7 @@ public class Ventana extends JFrame {
 				// TODO Auto-generated method stub
 				int confirmacion = JOptionPane.showConfirmDialog(null, "¿Está seguro de eliminar esta categoria?");
 				if (confirmacion == 0) {
-					conexion.eliminar_Categoria(cmb);
+					conexion.eliminar_Categoria(cmb_categoria);
 					JOptionPane.showMessageDialog(null, "Categoria eliminada correctamente");
 				}
 			}
@@ -3466,7 +3472,7 @@ public class Ventana extends JFrame {
 		cmb_marca.setLocation(325, 110);
 		editar_marca.add(cmb_marca);
 
-		JLabel marca_vehículo = new JLabel("Selecciona la marca ha editar");
+		JLabel marca_vehículo = new JLabel("Selecciona la marca a editar");
 		marca_vehículo.setSize(300, 30);
 		marca_vehículo.setLocation(430, 140);
 		marca_vehículo.setFont(new Font("Arial", Font.BOLD, 14));
@@ -3641,7 +3647,7 @@ public class Ventana extends JFrame {
 		cmb_marca.setLocation(325, 110);
 		eliminar_marca.add(cmb_marca);
 
-		JLabel marca_vehículo = new JLabel("Selecciona la marca ha eliminar");
+		JLabel marca_vehículo = new JLabel("Selecciona la marca a eliminar");
 		marca_vehículo.setSize(300, 30);
 		marca_vehículo.setLocation(430, 140);
 		marca_vehículo.setFont(new Font("Arial", Font.BOLD, 14));
@@ -3657,6 +3663,7 @@ public class Ventana extends JFrame {
 		in_nombre_marca.setSize(280, 30);
 		in_nombre_marca.setLocation(250, 210);
 		in_nombre_marca.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_nombre_marca.setEditable(false);
 		eliminar_marca.add(in_nombre_marca);
 
 		JLabel origen_marca = new JLabel("Pais de origen de la marca");
@@ -3669,6 +3676,7 @@ public class Ventana extends JFrame {
 		in_origen_marca.setSize(280, 30);
 		in_origen_marca.setLocation(250, 300);
 		in_origen_marca.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_origen_marca.setEditable(false);
 		eliminar_marca.add(in_origen_marca);
 
 		JLabel representante_marca = new JLabel("Representante de la marca");
@@ -3681,6 +3689,7 @@ public class Ventana extends JFrame {
 		in_representante_marca.setSize(280, 30);
 		in_representante_marca.setLocation(585, 210);
 		in_representante_marca.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_representante_marca.setEditable(false);
 		eliminar_marca.add(in_representante_marca);
 
 		JLabel correo_marca = new JLabel("Correo de contacto");
@@ -3693,6 +3702,7 @@ public class Ventana extends JFrame {
 		in_correo_marca.setSize(280, 30);
 		in_correo_marca.setLocation(250, 390);
 		in_correo_marca.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_correo_marca.setEditable(false);
 		eliminar_marca.add(in_correo_marca);
 
 		JLabel numero_marca = new JLabel("Numero de contacto");
@@ -3705,6 +3715,7 @@ public class Ventana extends JFrame {
 		in_numero_marca.setSize(280, 30);
 		in_numero_marca.setLocation(585, 300);
 		in_numero_marca.setFont(new Font("Arial", Font.PLAIN, 16));
+		in_numero_marca.setEditable(false);
 		eliminar_marca.add(in_numero_marca);
 
 		cmb_marca.addActionListener(new ActionListener() {

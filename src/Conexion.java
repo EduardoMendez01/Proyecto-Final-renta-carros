@@ -1287,7 +1287,7 @@ public class Conexion {
 			Class.forName(CONTROLADOR);
 			conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
 			System.out.println("Conexión OK");
-
+			
 			stm = (Statement) conexion.createStatement();
 			rs = stm.executeQuery("SELECT * FROM categoria where es_visible = true");
 			valores.clear();
